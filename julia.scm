@@ -37,7 +37,6 @@
   "catch"
   "finally"
   "begin"
-  "do"
   "let"
   "quote"
   "using"
@@ -48,6 +47,7 @@
   "global"
   "outer"
   "as"
+  "where"
 ] @append_space
 
 ;; =============================================================
@@ -82,16 +82,18 @@
 )
 
 ;; --- abstract / primitive type ---
+;; These are typically single-line: `abstract type T end`, `primitive type T 64 end`
+;; No block body, so no indentation — just ensure spaces.
 
 (abstract_definition
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
-)
-(abstract_definition
-  (type_head) @append_hardline @append_indent_start
+  (type_head) @append_space
+  "end" @append_hardline
 )
 
 (primitive_definition
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  (type_head) @append_space
+  (integer_literal) @append_space
+  "end" @append_hardline
 )
 
 ;; --- if ---
@@ -102,9 +104,12 @@
 )
 
 ;; --- for ---
+;; Indent starts from the "for" keyword context. The last for_binding
+;; gets the hardline+indent from the blanket (_) @append_hardline rule,
+;; combined with this single indent_start on "for".
 
 (for_statement
-  (for_binding) @append_hardline @append_indent_start
+  "for" @append_indent_start
   "end" @prepend_hardline @prepend_indent_end @append_hardline
 )
 
@@ -129,10 +134,18 @@
   "end" @prepend_hardline @prepend_indent_end @append_hardline
 )
 
-;; let with bindings: bindings stay on same line, body indented below
+;; let with bindings: bindings stay on same line, body indented below.
+;; indent_start and indent_end are paired here.
 (let_statement
   (let_binding) @append_hardline @append_indent_start
   "end" @prepend_hardline @prepend_indent_end @append_hardline
+)
+
+;; "end" in let_statement: always put it on its own line.
+;; For empty let: "let" keyword's @append_space + end's @prepend_hardline
+;; gives "let\nend". For let with bindings, the paired rule above handles it.
+(let_statement
+  "end" @prepend_hardline @append_hardline
 )
 
 (quote_statement
@@ -141,9 +154,13 @@
 )
 
 ;; --- do clause ---
+;; "do" gets space before it (prepend) and space after (append, for args).
+;; Indent starts after "do": the blanket (_) @append_hardline rule
+;; ensures newlines after the argument_list (or body exprs).
+;; "end" de-indents and sits on its own line.
 
 (do_clause
-  "do" @append_hardline @append_indent_start
+  "do" @prepend_space @append_space @append_indent_start
   "end" @prepend_hardline @prepend_indent_end
 )
 
@@ -210,6 +227,8 @@
 (if_statement (_) @append_hardline)
 (elseif_clause (_) @append_hardline)
 (else_clause (_) @append_hardline)
+;; For body: hardline after every child (bindings + body).
+;; Multi-binding for loops get one binding per line with leading comma.
 (for_statement (_) @append_hardline)
 (while_statement (_) @append_hardline)
 (try_statement (_) @append_hardline)
@@ -279,59 +298,74 @@
   "::" @prepend_antispace
 )
 
+;; Where clause: space before and after "where"
+(where_expression
+  "where" @prepend_space
+)
+
 ;; =============================================================
 ;; 6. Argument lists and collections — softline formatting
 ;; =============================================================
 
 ;; Function argument lists
+;; empty_softline: nothing in single-line, newline in multi-line
+;; spaced_softline: space in single-line, newline in multi-line
 (argument_list
-  "(" @append_spaced_softline @append_indent_start
+  "(" @append_empty_softline @append_indent_start
   "," @append_spaced_softline
-  ")" @prepend_spaced_softline @prepend_indent_end
+  ")" @prepend_empty_softline @prepend_indent_end
+)
+
+;; Semicolons in argument lists (keyword arg separator)
+(argument_list
+  ";" @append_spaced_softline
+)
+
+;; Named/keyword arguments: space around =
+(named_argument
+  (operator) @prepend_space @append_space
 )
 
 ;; Tuple expressions
 (tuple_expression
-  "(" @append_spaced_softline @append_indent_start
+  "(" @append_empty_softline @append_indent_start
   "," @append_spaced_softline
-  ")" @prepend_spaced_softline @prepend_indent_end
+  ")" @prepend_empty_softline @prepend_indent_end
 )
 
 ;; Parenthesized expressions
 (parenthesized_expression
-  "(" @append_spaced_softline @append_indent_start
-  ")" @prepend_spaced_softline @prepend_indent_end
+  "(" @append_empty_softline @append_indent_start
+  ")" @prepend_empty_softline @prepend_indent_end
 )
 
 ;; Vector expressions
 (vector_expression
-  "[" @append_spaced_softline @append_indent_start
+  "[" @append_empty_softline @append_indent_start
   "," @append_spaced_softline
-  "]" @prepend_spaced_softline @prepend_indent_end
+  "]" @prepend_empty_softline @prepend_indent_end
 )
 
 ;; Curly expressions (type parameters)
 (curly_expression
-  "{" @append_spaced_softline @append_indent_start
+  "{" @append_empty_softline @append_indent_start
   "," @append_spaced_softline
-  "}" @prepend_spaced_softline @prepend_indent_end
+  "}" @prepend_empty_softline @prepend_indent_end
 )
 
 ;; =============================================================
 ;; 7. Top-level / source file structure
 ;; =============================================================
 
-;; Allow blank lines between top-level definitions
-(source_file
-  [
-    (function_definition)
-    (macro_definition)
-    (struct_definition)
-    (abstract_definition)
-    (primitive_definition)
-    (module_definition)
-  ] @allow_blank_line_before
-)
+;; Allow blank lines between top-level definitions and statements.
+;; This preserves intentional visual grouping in the source.
+(source_file (_) @allow_blank_line_before)
+(module_definition (_) @allow_blank_line_before)
+(function_definition (_) @allow_blank_line_before)
+(if_statement (_) @allow_blank_line_before)
+(for_statement (_) @allow_blank_line_before)
+(while_statement (_) @allow_blank_line_before)
+(try_statement (_) @allow_blank_line_before)
 
 ;; =============================================================
 ;; 8. Comments

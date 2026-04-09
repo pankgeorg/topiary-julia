@@ -1,0 +1,17 @@
+[package]
+name = "topiary-julia"
+version = "0.1.0"
+edition = "2024"
+description = "A Julia code formatter powered by Topiary"
+license = "MIT"
+
+[dependencies]
+topiary-core = "0.7.3"
+topiary-tree-sitter-facade = "0.7.3"
+tree-sitter-julia = "0.23.1"
+clap = { version = "4", features = ["derive"] }
+log = "0.4"
+env_logger = "0.11"
+
+[dev-dependencies]
+pretty_assertions = "1"

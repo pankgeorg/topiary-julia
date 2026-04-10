@@ -353,6 +353,13 @@
   "}" @prepend_empty_softline @prepend_indent_end
 )
 
+;; Matrix expressions: spaces between row elements are SEMANTICALLY significant.
+;; [a b c] is a 1x3 matrix row, [abc] is a 1-element vector.
+;; We MUST preserve spaces between elements in matrix rows.
+(matrix_row
+  (_) @append_space
+)
+
 ;; =============================================================
 ;; 7. Top-level / source file structure
 ;; =============================================================
@@ -395,14 +402,27 @@
   "as" @prepend_space
 )
 
+;; NOTE: Relative import dots (import ..A) are stripped by Topiary because
+;; the "." tokens in import_path are not addressable in queries for this
+;; grammar version. This is a known limitation.
+
 ;; =============================================================
 ;; 10. Macro calls
 ;; =============================================================
 
-;; Space-separated macro calls: @assert x, @testset "a" begin...
-;; The macro_identifier is followed by arguments.
+;; Macro calls: @x(args), @x[args], @x{args} must NOT get a space
+;; because it changes the AST. Only add space when the macro uses
+;; space-separated arguments (macro_argument_list node).
 (macrocall_expression
   (macro_identifier) @append_space
+  .
+  (macro_argument_list)
+)
+
+;; Space-separated macro arguments need spaces between them.
+;; Without this, @foo a b becomes @foo ab.
+(macro_argument_list
+  (_) @append_space
 )
 
 ;; =============================================================

@@ -20,9 +20,9 @@ A Julia code formatter powered by [Topiary](https://github.com/tweag/topiary) (t
 
 ```
 Total snippets:    828
-Skipped (parse):   170  (88 intentional errors + 82 tree-sitter gaps)
+Skipped (parse):   156  (88 intentional errors + 68 tree-sitter gaps)
 Format failures:     0
-AST preserved:     628  (95.4% of testable)
+AST preserved:     642  (95.5% of testable)
 AST changed:         5
 Parse errors:       25  (7 unique edge cases)
 ```
@@ -68,28 +68,31 @@ cargo test --test format_test idempotence::   # 10 tests
 - `(_) . (_) @prepend_hardline` is unreliable in tree-sitter-julia (only matches first pair)
 - Qualified macro spacing (`A.@foo a b`) loses space before args
 
-### Tree-sitter-julia grammar gaps (82 non-intentional parse failures)
-- **Fixable (Tier 2)**: Semicolons in brackets `[;]`, `{a ;; b}` (#120); Advanced imports `import A.:+` (#74)
-- **Blocked on scanner**: `var"..."` identifiers (#92); operator suffixes `+₁` 
+### Tree-sitter-julia grammar gaps (68 non-intentional parse failures)
+- **Fixed**: Semicolons in brackets `[;]`, `{a ;; b}` (#120); Quoted import paths `import A.:+` (#74)
+- **Remaining (Tier 2)**: `import A.==` (lexer combines `.==` as broadcast op); operator suffixes `+₁`
+- **Blocked on scanner**: `var"..."` identifiers (#92)
 - **Architectural**: `$` as operator (#161); `public` as contextual identifier; emoji identifiers
 
 ## Git history
 
 ### topiary-julia (this repo)
 ```
+8a670be fix: preserve bracescat expressions as leaf nodes
+80cf059 chore: update tree-sitter-julia to latest fork
+567756c docs: add STATUS.md with full project summary
 933be56 chore: point tree-sitter-julia at pankgeorg fork
 aecdd64 Reorganize test infrastructure
 b98e00f Fix semicolons and improve v0.25.0 block handling
 131e918 Upgrade to tree-sitter-julia v0.25.0
-cc5ebec Fix relative import dots and add macro call tests
-2e0e549 Fix matrix expressions, prefix ops, and block type annotations
-47a1111 Refine formatting rules and expand test coverage
-0063189 Add AST equivalence test against JuliaSyntax.jl corpus
+...
 4a57e9a Initial implementation of topiary-julia
 ```
 
 ### pankgeorg/tree-sitter-julia (branch: topiary-julia)
 ```
+53745aa feat(grammar): support advanced import paths with quoted operators
+469282b feat(grammar): add semicolons in brackets and bracescat support
 61dbc05 docs: update plan checklist with completed items
 c750671 chore: regenerate parser
 7d9f0f6 feat(grammar): expand Unicode identifier start characters

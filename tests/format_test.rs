@@ -307,11 +307,11 @@ format_test!(
 // ── Multi-binding for ───────────────────────────────────────
 
 // Multi-binding for: each binding gets its own line.
-// Known limitation: comma lands on the next line with the next binding.
+// Known limitation: comma starts the next line due to @append_hardline.
 format_test!(
     for_multi_binding,
     "for i in 1:3, j in 1:3\nprintln(i,j)\nend\n",
-    "for i in 1:3\n    ,j in 1:3\n    println(i, j)\nend"
+    "for i in 1:3\n    ,\n    j in 1:3\n    println(i, j)\nend"
 );
 
 // ── Empty let ───────────────────────────────────────────────

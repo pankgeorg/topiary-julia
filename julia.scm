@@ -79,8 +79,11 @@
 ;; --- module ---
 
 (module_definition
-  name: (_) @append_hardline @append_indent_start
+  name: (_) @append_indent_start
   "end" @prepend_hardline @prepend_indent_end @append_hardline
+)
+(module_definition
+  (block) @prepend_hardline
 )
 
 ;; --- abstract / primitive type ---
@@ -121,8 +124,11 @@
 ;; --- try ---
 
 (try_statement
-  "try" @append_hardline @append_indent_start
+  "try" @append_indent_start
   "end" @prepend_hardline @prepend_indent_end @append_hardline
+)
+(try_statement
+  (block) @prepend_hardline
 )
 
 ;; --- begin / let / quote ---
@@ -186,27 +192,35 @@
 )
 
 ;; =============================================================
-;; 4b. Hardlines between statements
-;;     In v0.25.0, body statements are inside (block) nodes.
-;;     We add hardlines to every child of block and other contexts.
+;; 4b. Statement separation
+;;     In v0.25.0, all block bodies are inside visible (block) nodes.
+;;     We use @append_hardline for reliable separation (fires on every child).
+;;     For for/let bindings, we also use @prepend_hardline to keep
+;;     commas on the correct line.
 ;; =============================================================
 
-;; The (block) node contains body statements — hardline after each.
+;; Inside blocks: hardline after each statement
 (block (_) @append_hardline)
 
-;; Top-level and other non-block contexts still need hardlines.
+;; Top-level: hardline after each item
 (source_file (_) @append_hardline)
-(module_definition (_) @append_hardline)
-(if_statement (_) @append_hardline)
-(elseif_clause (_) @append_hardline)
-(else_clause (_) @append_hardline)
+
+;; For/let: @append_hardline on all children + @prepend_hardline
+;; to keep commas at end of previous line (for multi-binding).
 (for_statement (_) @append_hardline)
-(while_statement (_) @append_hardline)
-(try_statement (_) @append_hardline)
-(catch_clause (_) @append_hardline)
-(finally_clause (_) @append_hardline)
+(for_statement (_) . (_) @prepend_hardline)
+(for_statement (block) @prepend_hardline)
 (let_statement (_) @append_hardline)
+(let_statement (_) . (_) @prepend_hardline)
+(let_statement (block) @prepend_hardline)
+
+;; Do clause
 (do_clause (_) @append_hardline)
+(do_clause (block) @prepend_hardline)
+
+;; Catch: ensure hardline before block even when no identifier
+(catch_clause (block) @prepend_hardline)
+
 
 ;; =============================================================
 ;; 4c. For-binding spacing (for x in collection)

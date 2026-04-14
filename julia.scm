@@ -377,6 +377,13 @@
   (macro_argument_list)
 )
 
+;; Qualified macro calls: A.@foo a b
+(macrocall_expression
+  (field_expression) @append_space
+  .
+  (macro_argument_list)
+)
+
 (macro_argument_list
   (_) @append_space
 )

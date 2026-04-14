@@ -22,9 +22,9 @@ A Julia code formatter powered by [Topiary](https://github.com/tweag/topiary) (t
 Total snippets:    828
 Skipped (parse):   156  (88 intentional errors + 68 tree-sitter gaps)
 Format failures:     0
-AST preserved:     642  (95.5% of testable)
-AST changed:         5
-Parse errors:       25  (7 unique edge cases)
+AST preserved:     653  (97.2% of testable)
+AST changed:         1  ([1 :a] juxtaposition vs hcat)
+Parse errors:       18  (13 semicolons-as-separators, 4 double-semicolons, 1 nested assignment)
 ```
 
 ### Format test modules
@@ -63,10 +63,9 @@ cargo test --test format_test idempotence::   # 10 tests
 ## Known limitations
 
 ### Formatter (julia.scm)
-- Multi-binding `for`/`let` comma placement (comma starts next line)
-- Semicolons-as-statement-separators (`a;b;c`) get misplaced
+- Semicolons-as-statement-separators (`a;b;c`) get misplaced (Topiary anonymous token limitation)
+- Double-semicolons in function args (`+(;;a)`) get spaces inserted
 - `(_) . (_) @prepend_hardline` is unreliable in tree-sitter-julia (only matches first pair)
-- Qualified macro spacing (`A.@foo a b`) loses space before args
 
 ### Tree-sitter-julia grammar gaps (68 non-intentional parse failures)
 - **Fixed**: Semicolons in brackets `[;]`, `{a ;; b}` (#120); Quoted import paths `import A.:+` (#74)
@@ -78,6 +77,9 @@ cargo test --test format_test idempotence::   # 10 tests
 
 ### topiary-julia (this repo)
 ```
+c138c8a chore: update tree-sitter-julia (try without catch/finally)
+04652cf fix: preserve commas in multi-binding for/let and do clause args
+aece18c fix: add space after qualified macro identifiers (A.@foo)
 8a670be fix: preserve bracescat expressions as leaf nodes
 80cf059 chore: update tree-sitter-julia to latest fork
 567756c docs: add STATUS.md with full project summary
@@ -91,6 +93,7 @@ b98e00f Fix semicolons and improve v0.25.0 block handling
 
 ### pankgeorg/tree-sitter-julia (branch: topiary-julia)
 ```
+5670fab fix(grammar): allow try statement without catch or finally
 53745aa feat(grammar): support advanced import paths with quoted operators
 469282b feat(grammar): add semicolons in brackets and bracescat support
 61dbc05 docs: update plan checklist with completed items

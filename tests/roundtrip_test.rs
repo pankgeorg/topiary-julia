@@ -15,7 +15,7 @@ const CORPUS_FILES: &[(&str, &str)] = &[
 ];
 
 // Update when fixing regressions. Test fails if count increases OR decreases.
-const EXPECTED_REGRESSIONS: usize = 1; // while a(); b(); end — semicolons displaced
+const EXPECTED_REGRESSIONS: usize = 0;
 
 #[test]
 fn roundtrip_corpus_no_new_errors() {

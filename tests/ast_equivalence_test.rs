@@ -26,7 +26,7 @@ const EXPECTED_INTENTIONAL_ERRORS: usize = 88;
 /// Valid Julia that tree-sitter-julia can't parse yet (JuliaSyntax has no error).
 const EXPECTED_GRAMMAR_GAPS: usize = 59;
 /// Snippets where formatting introduces new ERROR nodes.
-const EXPECTED_FORMAT_ERRORS: usize = 18;
+const EXPECTED_FORMAT_ERRORS: usize = 5;
 /// Snippets where formatting changes the AST structure.
 const EXPECTED_AST_MISMATCHES: usize = 1;
 

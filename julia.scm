@@ -205,6 +205,23 @@
 ;; Top-level: hardline after each item
 (source_file (_) @append_hardline)
 
+;; Semicolons as statement separators: delete them.
+;; They're replaced by hardlines from the rules above.
+;; Only in statement/block contexts — NOT in argument_list, tuple, paren, etc.
+(source_file ";" @delete)
+(block ";" @delete)
+(while_statement ";" @delete)
+(for_statement ";" @delete)
+(if_statement ";" @delete)
+(try_statement ";" @delete)
+(function_definition ";" @delete)
+(struct_definition ";" @delete)
+(module_definition ";" @delete)
+(let_statement ";" @delete)
+(compound_statement ";" @delete)
+(macro_definition ";" @delete)
+(do_clause ";" @delete)
+
 ;; For/let: hardline before block, comma spacing for multi-binding.
 (for_statement (block) @prepend_hardline)
 (for_statement "," @append_space)

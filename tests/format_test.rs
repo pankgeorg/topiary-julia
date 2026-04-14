@@ -366,6 +366,17 @@ format_test!(
     "return a\nreturn b"
 );
 
+// ── Relative imports ────────────────────────────────────────
+
+format_test!(import_relative_single, "import .A\n", "import .A");
+format_test!(import_relative_double, "import ..A\n", "import ..A");
+format_test!(import_relative_triple, "import ...A\n", "import ...A");
+format_test!(import_dotted_path, "import Foo.Bar\n", "import Foo.Bar");
+
+format_test!(macro_space_separated, "@foo a b\n", "@foo a b");
+format_test!(macro_paren_no_space, "@x(a, b)\n", "@x(a, b)");
+format_test!(macro_qualified_space, "A.@foo a b\n", "A.@foo a b");
+
 // ── Idempotence ─────────────────────────────────────────────
 
 idempotent_test!(

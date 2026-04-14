@@ -402,9 +402,10 @@
   "as" @prepend_space
 )
 
-;; NOTE: Relative import dots (import ..A) are stripped by Topiary because
-;; the "." tokens in import_path are not addressable in queries for this
-;; grammar version. This is a known limitation.
+;; Relative import dots (import ..A) use anonymous "." tokens that are not
+;; addressable in queries for this grammar version (v0.23.1). Marking
+;; import_path as @leaf preserves its content verbatim, keeping dots intact.
+(import_path) @leaf
 
 ;; =============================================================
 ;; 10. Macro calls

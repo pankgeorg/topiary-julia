@@ -121,7 +121,7 @@ pub fn source_has_errors(code: &str) -> bool {
 }
 
 fn has_error(node: &Node) -> bool {
-    if node.kind() == "ERROR" || node.is_error() {
+    if node.kind() == "ERROR" || node.is_error() || node.is_missing() {
         return true;
     }
     for i in 0..node.child_count() {

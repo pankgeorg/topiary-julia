@@ -166,9 +166,23 @@ pub fn extract_treesitter_snippets(corpus: &str) -> Vec<(String, String)> {
     snippets
 }
 
+/// A snippet from the JuliaSyntax.jl corpus with its expected parse output.
+pub struct JuliaSyntaxSnippet {
+    pub code: String,
+    pub expected: String,
+    pub line_num: usize,
+}
+
+impl JuliaSyntaxSnippet {
+    /// Whether JuliaSyntax itself expects this snippet to produce an error.
+    pub fn is_intentional_error(&self) -> bool {
+        self.expected.contains("error")
+    }
+}
+
 /// Extract Julia code snippets from JuliaSyntax.jl's parser.jl.
-/// Returns (code, line_number) pairs.
-pub fn extract_juliasyntax_snippets(corpus: &str) -> Vec<(String, usize)> {
+/// Returns snippets with both the Julia code and the expected JuliaSyntax output.
+pub fn extract_juliasyntax_snippets(corpus: &str) -> Vec<JuliaSyntaxSnippet> {
     let mut snippets = Vec::new();
 
     for (line_num, line) in corpus.lines().enumerate() {
@@ -217,7 +231,11 @@ pub fn extract_juliasyntax_snippets(corpus: &str) -> Vec<(String, usize)> {
 
             if let Some(code) = code {
                 if !code.is_empty() {
-                    snippets.push((code, line_num + 1));
+                    snippets.push(JuliaSyntaxSnippet {
+                        code,
+                        expected: rhs.to_string(),
+                        line_num: line_num + 1,
+                    });
                 }
             }
         }

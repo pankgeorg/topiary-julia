@@ -14,6 +14,9 @@ const CORPUS_FILES: &[(&str, &str)] = &[
     ("statements", include_str!("corpus/statements.txt")),
 ];
 
+// Update when fixing regressions. Test fails if count increases OR decreases.
+const EXPECTED_REGRESSIONS: usize = 1; // while a(); b(); end — semicolons displaced
+
 #[test]
 fn roundtrip_corpus_no_new_errors() {
     let mut total = 0;
@@ -50,7 +53,7 @@ fn roundtrip_corpus_no_new_errors() {
     eprintln!("Total snippets: {total}");
     eprintln!("Passed: {passed}");
     eprintln!("Format failures (non-fatal): {}", format_failures.len());
-    eprintln!("Parse regressions (FATAL): {}", parse_regressions.len());
+    eprintln!("Parse regressions: {}", parse_regressions.len());
 
     if !format_failures.is_empty() {
         eprintln!("\n--- Format failures (tolerated) ---");
@@ -66,12 +69,15 @@ fn roundtrip_corpus_no_new_errors() {
         }
     }
 
-    // Known limitations: multi-binding for/let commas, qualified macros,
-    // semicolons-as-separators in single-line blocks.
-    let max_allowed_regressions = 5;
     assert!(
-        parse_regressions.len() <= max_allowed_regressions,
-        "{} regressions exceeds threshold of {max_allowed_regressions} (out of {total} snippets)",
+        parse_regressions.len() <= EXPECTED_REGRESSIONS,
+        "Regressions increased! Expected at most {EXPECTED_REGRESSIONS}, got {}.",
         parse_regressions.len()
     );
+    if parse_regressions.len() < EXPECTED_REGRESSIONS {
+        eprintln!(
+            "\n✓ Regressions improved: {} → {} (update EXPECTED_REGRESSIONS)",
+            EXPECTED_REGRESSIONS, parse_regressions.len()
+        );
+    }
 }

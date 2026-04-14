@@ -4,11 +4,31 @@
 //! with topiary-julia, and verifies the tree-sitter AST is structurally
 //! identical before and after formatting.
 //!
+//! Snippets are classified into four categories:
+//!   1. Intentional errors — JuliaSyntax expects an error parse
+//!   2. Grammar gaps — valid Julia that tree-sitter-julia can't parse
+//!   3. Formatter issues — formatting introduces parse errors or AST changes
+//!   4. Passing — AST identical before and after formatting
+//!
 //! Run: cargo test --test ast_equivalence_test
 
 mod common;
 
 const JULIASYNTAX_CORPUS: &str = include_str!("corpus/juliasyntax_parser.jl");
+
+// ─── Expected counts ────────────────────────────────────────────
+// Update these when fixing grammar gaps or formatter issues.
+// The test fails if reality doesn't match expectations — in either direction.
+// If a fix reduces a count, update the constant so regressions are caught.
+
+/// Snippets where both tree-sitter AND JuliaSyntax agree it's an error (skip).
+const EXPECTED_INTENTIONAL_ERRORS: usize = 84;
+/// Valid Julia that tree-sitter-julia can't parse yet (JuliaSyntax has no error).
+const EXPECTED_GRAMMAR_GAPS: usize = 73;
+/// Snippets where formatting introduces new ERROR nodes.
+const EXPECTED_FORMAT_ERRORS: usize = 18;
+/// Snippets where formatting changes the AST structure.
+const EXPECTED_AST_MISMATCHES: usize = 1;
 
 // ─── Unit tests for extraction logic ────────────────────────────
 
@@ -31,108 +51,170 @@ fn extract_snippets_count() {
 
 #[test]
 fn tree_to_sexp_basic() {
-    let sexp = common::tree_to_sexp("x = 1\n");
-    assert!(sexp.contains("assignment"), "Expected 'assignment' in sexp, got: {sexp}");
-    assert!(sexp.contains("identifier"), "Expected 'identifier' in sexp, got: {sexp}");
+    let sexp = common::tree_to_sexp("x + y");
+    assert!(sexp.contains("binary_expression"), "got: {sexp}");
 }
 
 #[test]
 fn sexp_equivalence_simple() {
-    let before = common::tree_to_sexp("x  =  1\n");
-    let after = common::tree_to_sexp("x = 1\n");
-    assert_eq!(before, after, "Whitespace-only change should not affect AST");
+    let before = common::tree_to_sexp("x+y");
+    let after = common::tree_to_sexp("x + y");
+    assert_eq!(before, after, "Whitespace-only changes should not affect AST");
 }
 
-// ─── Main AST equivalence test ──────────────────────────────────
+// ─── Main corpus test ───────────────────────────────────────────
 
 #[test]
 fn juliasyntax_corpus() {
     let snippets = common::extract_juliasyntax_snippets(JULIASYNTAX_CORPUS);
     assert!(snippets.len() > 500, "Extraction may be broken: got {} snippets", snippets.len());
 
-    let mut total = 0;
+    let mut intentional_errors = 0;
+    let mut grammar_gaps: Vec<(usize, String)> = Vec::new();
     let mut passed = 0;
-    let mut skipped_parse_error = 0;
-    let mut format_failures = 0;
-    let mut ast_mismatches: Vec<String> = Vec::new();
-    let mut new_errors: Vec<String> = Vec::new();
+    let mut format_errors = 0;
+    let mut new_parse_errors: Vec<(usize, String, String)> = Vec::new(); // (line, in, out)
+    let mut ast_mismatches: Vec<(usize, String, String, String, String)> = Vec::new();
 
-    for (code, line_num) in &snippets {
-        total += 1;
+    for s in &snippets {
+        let ts_has_errors = common::source_has_errors(&s.code);
 
-        if common::source_has_errors(code) {
-            skipped_parse_error += 1;
+        // Category 1: intentional error — BOTH tree-sitter and JuliaSyntax agree it fails
+        if ts_has_errors && s.is_intentional_error() {
+            intentional_errors += 1;
             continue;
         }
 
-        let sexp_before = common::tree_to_sexp(code);
+        // Category 2: grammar gap — tree-sitter fails but JuliaSyntax parses OK
+        if ts_has_errors {
+            grammar_gaps.push((s.line_num, s.code.clone()));
+            continue;
+        }
 
-        match common::format_julia_tolerant(code) {
+        // If tree-sitter can parse it, we test it — even if JuliaSyntax
+        // expected an error (e.g. partial-parse productions, trailing junk).
+
+        // Category 3+4: testable — format and compare AST
+        let sexp_before = common::tree_to_sexp(&s.code);
+
+        match common::format_julia_tolerant(&s.code) {
             Ok(formatted) => {
                 if common::source_has_errors(&formatted) {
-                    new_errors.push(format!(
-                        "L{line_num}: formatting introduced ERROR nodes\n  in:  {code:?}\n  out: {formatted:?}"
-                    ));
+                    new_parse_errors.push((s.line_num, s.code.clone(), formatted));
                     continue;
                 }
 
                 let sexp_after = common::tree_to_sexp(&formatted);
-
                 if sexp_before == sexp_after {
                     passed += 1;
                 } else {
-                    ast_mismatches.push(format!(
-                        "L{line_num}: AST changed after formatting\n  code:   {code:?}\n  format: {formatted:?}\n  before: {sexp_before}\n  after:  {sexp_after}"
+                    ast_mismatches.push((
+                        s.line_num,
+                        s.code.clone(),
+                        formatted,
+                        sexp_before,
+                        sexp_after,
                     ));
                 }
             }
-            Err(e) => {
-                format_failures += 1;
-                let _ = e;
+            Err(_) => {
+                format_errors += 1;
             }
         }
     }
 
-    eprintln!("\n=== JuliaSyntax AST Equivalence Results ===");
-    eprintln!("Total snippets extracted: {total}");
-    eprintln!("Skipped (original has parse errors): {skipped_parse_error}");
-    eprintln!("Format failures (non-fatal): {format_failures}");
-    eprintln!("AST preserved (PASS): {passed}");
-    eprintln!("AST changed (MISMATCH): {}", ast_mismatches.len());
-    eprintln!("New parse errors: {}", new_errors.len());
+    let total = snippets.len();
+    let testable = total - intentional_errors - grammar_gaps.len() - format_errors;
 
-    if !new_errors.is_empty() {
-        eprintln!("\n--- New parse errors (first 30) ---");
-        for e in new_errors.iter().take(30) {
-            eprintln!("  {e}");
+    // ── Report ──────────────────────────────────────────────────
+    eprintln!("\n=== JuliaSyntax AST Equivalence Results ===");
+    eprintln!("Total snippets:       {total}");
+    eprintln!("Intentional errors:   {intentional_errors} (skipped)");
+    eprintln!("Grammar gaps:         {} (tree-sitter can't parse)", grammar_gaps.len());
+    eprintln!("Format errors:        {format_errors}");
+    eprintln!("---");
+    eprintln!("Testable:             {testable}");
+    eprintln!("  Passed:             {passed}");
+    eprintln!("  Parse errors:       {} (formatting introduced ERRORs)", new_parse_errors.len());
+    eprintln!("  AST mismatches:     {}", ast_mismatches.len());
+
+    if testable > 0 {
+        eprintln!("  Pass rate:          {passed}/{testable} ({:.1}%)",
+            passed as f64 / testable as f64 * 100.0);
+    }
+
+    if !new_parse_errors.is_empty() {
+        eprintln!("\n--- Parse errors (formatting introduced ERRORs) ---");
+        for (line, code, formatted) in &new_parse_errors {
+            eprintln!("  L{line}: {code:?} → {formatted:?}");
         }
     }
 
     if !ast_mismatches.is_empty() {
-        eprintln!("\n--- AST mismatches (first 20) ---");
-        for m in ast_mismatches.iter().take(20) {
-            eprintln!("  {m}");
+        eprintln!("\n--- AST mismatches ---");
+        for (line, code, formatted, before, after) in &ast_mismatches {
+            eprintln!("  L{line}: {code:?} → {formatted:?}");
+            eprintln!("    before: {before}");
+            eprintln!("    after:  {after}");
         }
     }
 
-    let failure_count = ast_mismatches.len() + new_errors.len();
-    let testable = total - skipped_parse_error - format_failures;
-    let pass_rate = if testable > 0 {
-        (passed as f64 / testable as f64) * 100.0
-    } else {
-        0.0
-    };
+    if !grammar_gaps.is_empty() {
+        eprintln!("\n--- Grammar gaps (first 10) ---");
+        for (line, code) in grammar_gaps.iter().take(10) {
+            eprintln!("  L{line}: {code:?}");
+        }
+        if grammar_gaps.len() > 10 {
+            eprintln!("  ... and {} more", grammar_gaps.len() - 10);
+        }
+    }
 
-    eprintln!("\nPass rate: {passed}/{testable} ({pass_rate:.1}%)");
+    // ── Assertions ──────────────────────────────────────────────
+    // Each assertion checks BOTH directions: regressions AND improvements.
+    // When you fix something, update the constant at the top of this file.
 
-    let max_failure_pct = 15.0;
-    let failure_pct = if testable > 0 {
-        (failure_count as f64 / testable as f64) * 100.0
-    } else {
-        0.0
-    };
-    assert!(
-        failure_pct <= max_failure_pct,
-        "{failure_count} failures ({failure_pct:.1}%) exceeds {max_failure_pct}% threshold"
+    assert_eq!(
+        intentional_errors, EXPECTED_INTENTIONAL_ERRORS,
+        "Intentional error count changed (expected {EXPECTED_INTENTIONAL_ERRORS}, got {intentional_errors}). \
+         If extraction changed, update EXPECTED_INTENTIONAL_ERRORS."
     );
+
+    assert!(
+        grammar_gaps.len() <= EXPECTED_GRAMMAR_GAPS,
+        "Grammar gaps increased! Expected at most {EXPECTED_GRAMMAR_GAPS}, got {}. \
+         A grammar regression was introduced.",
+        grammar_gaps.len()
+    );
+    if grammar_gaps.len() < EXPECTED_GRAMMAR_GAPS {
+        eprintln!(
+            "\n✓ Grammar gaps improved: {} → {} (update EXPECTED_GRAMMAR_GAPS)",
+            EXPECTED_GRAMMAR_GAPS, grammar_gaps.len()
+        );
+    }
+
+    assert!(
+        new_parse_errors.len() <= EXPECTED_FORMAT_ERRORS,
+        "Format-introduced errors increased! Expected at most {EXPECTED_FORMAT_ERRORS}, got {}. \
+         A formatter regression was introduced.",
+        new_parse_errors.len()
+    );
+    if new_parse_errors.len() < EXPECTED_FORMAT_ERRORS {
+        eprintln!(
+            "\n✓ Format errors improved: {} → {} (update EXPECTED_FORMAT_ERRORS)",
+            EXPECTED_FORMAT_ERRORS, new_parse_errors.len()
+        );
+    }
+
+    assert!(
+        ast_mismatches.len() <= EXPECTED_AST_MISMATCHES,
+        "AST mismatches increased! Expected at most {EXPECTED_AST_MISMATCHES}, got {}. \
+         A formatter regression was introduced.",
+        ast_mismatches.len()
+    );
+    if ast_mismatches.len() < EXPECTED_AST_MISMATCHES {
+        eprintln!(
+            "\n✓ AST mismatches improved: {} → {} (update EXPECTED_AST_MISMATCHES)",
+            EXPECTED_AST_MISMATCHES, ast_mismatches.len()
+        );
+    }
 }

@@ -329,6 +329,10 @@
 ;; Matrix expressions: content is semantically significant.
 (matrix_expression) @leaf
 
+;; Bracescat: curly expressions with space/semicolon-separated elements.
+;; Spaces are semantic (like matrix expressions), so preserve as @leaf.
+(curly_expression (matrix_row)) @leaf
+
 ;; =============================================================
 ;; 7. Top-level / source file structure
 ;; =============================================================

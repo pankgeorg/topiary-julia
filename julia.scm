@@ -205,18 +205,15 @@
 ;; Top-level: hardline after each item
 (source_file (_) @append_hardline)
 
-;; For/let: @append_hardline on all children + @prepend_hardline
-;; to keep commas at end of previous line (for multi-binding).
-(for_statement (_) @append_hardline)
-(for_statement (_) . (_) @prepend_hardline)
+;; For/let: hardline before block, comma spacing for multi-binding.
 (for_statement (block) @prepend_hardline)
-(let_statement (_) @append_hardline)
-(let_statement (_) . (_) @prepend_hardline)
+(for_statement "," @append_space)
 (let_statement (block) @prepend_hardline)
+(let_statement "," @append_space)
 
-;; Do clause
-(do_clause (_) @append_hardline)
+;; Do clause: hardline before block, comma spacing for parameters.
 (do_clause (block) @prepend_hardline)
+(do_clause "," @append_space)
 
 ;; Catch: ensure hardline before block even when no identifier
 (catch_clause (block) @prepend_hardline)

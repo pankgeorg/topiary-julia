@@ -51,7 +51,7 @@ mod control_flow {
     format_test!(try_catch, "try\nf()\ncatch e\nprintln(e)\nend\n", "try\n    f()\ncatch e\n    println(e)\nend");
     format_test!(try_catch_finally, "try\nf()\ncatch e\nprintln(e)\nfinally\ncleanup()\nend\n", "try\n    f()\ncatch e\n    println(e)\nfinally\n    cleanup()\nend");
     // Known limitation: comma placement in multi-binding for.
-    format_test!(for_multi_binding, "for i in 1:3, j in 1:3\nprintln(i,j)\nend\n", "for i in 1:3\n    ,\n    j in 1:3\n    println(i, j)\nend");
+    format_test!(for_multi_binding, "for i in 1:3, j in 1:3\nprintln(i,j)\nend\n", "for i in 1:3, j in 1:3\n    println(i, j)\nend");
     format_test!(multiple_returns, "return a\nreturn b\n", "return a\nreturn b");
 }
 

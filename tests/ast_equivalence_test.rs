@@ -102,8 +102,8 @@ fn juliasyntax_corpus() {
     eprintln!("New parse errors: {}", new_errors.len());
 
     if !new_errors.is_empty() {
-        eprintln!("\n--- New parse errors (first 10) ---");
-        for e in new_errors.iter().take(10) {
+        eprintln!("\n--- New parse errors (first 30) ---");
+        for e in new_errors.iter().take(30) {
             eprintln!("  {e}");
         }
     }

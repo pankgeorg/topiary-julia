@@ -131,7 +131,7 @@
 
 (compound_statement
   "begin" @append_hardline @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
 
 ;; let with bindings: bindings stay on same line, body indented below.
@@ -293,6 +293,19 @@
   "->" @prepend_space @append_space
 )
 
+;; Unary operator followed by parenthesized/tuple expression needs space
+;; to prevent +(a,b) being parsed as a function call.
+(unary_expression
+  (operator) @append_space
+  .
+  (tuple_expression)
+)
+(unary_expression
+  (operator) @append_space
+  .
+  (parenthesized_expression)
+)
+
 ;; Type annotation ::
 (typed_expression
   "::" @prepend_antispace
@@ -353,12 +366,11 @@
   "}" @prepend_empty_softline @prepend_indent_end
 )
 
-;; Matrix expressions: spaces between row elements are SEMANTICALLY significant.
-;; [a b c] is a 1x3 matrix row, [abc] is a 1-element vector.
-;; We MUST preserve spaces between elements in matrix rows.
-(matrix_row
-  (_) @append_space
-)
+;; Matrix expressions: content is semantically significant in multiple ways.
+;; Spaces within rows distinguish [a b] (hcat, 1×2) from [ab] (single identifier).
+;; Semicolons/newlines between rows separate matrix rows: [x; y] is a 2-row matrix.
+;; Marking the entire matrix_expression as @leaf preserves all internal structure.
+(matrix_expression) @leaf
 
 ;; =============================================================
 ;; 7. Top-level / source file structure

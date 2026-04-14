@@ -377,6 +377,20 @@ format_test!(macro_space_separated, "@foo a b\n", "@foo a b");
 format_test!(macro_paren_no_space, "@x(a, b)\n", "@x(a, b)");
 format_test!(macro_qualified_space, "A.@foo a b\n", "A.@foo a b");
 
+// ── Matrix expressions ─────────────────────────────────────
+
+format_test!(matrix_vcat, "[x; y; z]\n", "[x; y; z]");
+format_test!(matrix_2x2, "[x y; z w]\n", "[x y; z w]");
+format_test!(matrix_typed_vcat, "T[x; y]\n", "T[x; y]");
+format_test!(matrix_hcat, "[a b c]\n", "[a b c]");
+format_test!(matrix_newline_sep, "[x\ny]\n", "[x\ny]");
+
+// ── Prefix operator spacing ────────────────────────────────
+
+format_test!(prefix_op_tuple, "+ (a, b)\n", "+ (a, b)");
+format_test!(prefix_op_no_space, "+(a, b)\n", "+(a, b)");
+format_test!(block_type_annotation, "begin x end::T\n", "begin\n    x\nend::T");
+
 // ── Idempotence ─────────────────────────────────────────────
 
 idempotent_test!(

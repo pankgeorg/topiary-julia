@@ -176,7 +176,8 @@ pub struct JuliaSyntaxSnippet {
 impl JuliaSyntaxSnippet {
     /// Whether JuliaSyntax itself expects this snippet to produce an error.
     pub fn is_intentional_error(&self) -> bool {
-        self.expected.contains("error")
+        let exp = self.expected.to_lowercase();
+        exp.contains("error")
     }
 }
 

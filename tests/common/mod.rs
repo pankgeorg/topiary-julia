@@ -233,33 +233,30 @@ pub fn extract_julia_string(s: &str) -> Option<String> {
         return None;
     }
 
-    let bytes = s.as_bytes();
-    let mut i = 1;
+    let mut chars = s[1..].chars();
     let mut result = String::new();
 
-    while i < bytes.len() {
-        match bytes[i] {
-            b'"' => return Some(result),
-            b'\\' if i + 1 < bytes.len() => {
-                match bytes[i + 1] {
-                    b'n' => result.push('\n'),
-                    b't' => result.push('\t'),
-                    b'\\' => result.push('\\'),
-                    b'"' => result.push('"'),
-                    b'$' => result.push('$'),
-                    b'r' => result.push('\r'),
-                    b'0' => result.push('\0'),
-                    other => {
-                        result.push('\\');
-                        result.push(other as char);
+    while let Some(c) = chars.next() {
+        match c {
+            '"' => return Some(result),
+            '\\' => {
+                if let Some(esc) = chars.next() {
+                    match esc {
+                        'n' => result.push('\n'),
+                        't' => result.push('\t'),
+                        '\\' => result.push('\\'),
+                        '"' => result.push('"'),
+                        '$' => result.push('$'),
+                        'r' => result.push('\r'),
+                        '0' => result.push('\0'),
+                        other => {
+                            result.push('\\');
+                            result.push(other);
+                        }
                     }
                 }
-                i += 2;
             }
-            other => {
-                result.push(other as char);
-                i += 1;
-            }
+            other => result.push(other),
         }
     }
 

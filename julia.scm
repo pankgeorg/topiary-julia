@@ -9,6 +9,7 @@
   (command_literal)
   (prefixed_command_literal)
   (character_literal)
+  (var_identifier)
   (line_comment)
   (block_comment)
 ] @leaf

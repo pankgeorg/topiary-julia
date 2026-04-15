@@ -24,7 +24,7 @@ const JULIASYNTAX_CORPUS: &str = include_str!("corpus/juliasyntax_parser.jl");
 /// Snippets where both tree-sitter AND JuliaSyntax agree it's an error (skip).
 const EXPECTED_INTENTIONAL_ERRORS: usize = 88;
 /// Valid Julia that tree-sitter-julia can't parse yet (JuliaSyntax has no error).
-const EXPECTED_GRAMMAR_GAPS: usize = 58;
+const EXPECTED_GRAMMAR_GAPS: usize = 56;
 /// Snippets where formatting introduces new ERROR nodes.
 const EXPECTED_FORMAT_ERRORS: usize = 0;
 /// Snippets where formatting changes the AST structure.

@@ -47,7 +47,7 @@ Topiary formats code by matching tree-sitter parse trees against query patterns 
 ```
 format_test:          68/68 pass   — hand-crafted input→output tests
 roundtrip_test:       59/59 pass   — tree-sitter corpus, no new ERROR nodes
-ast_equivalence_test: 683/684 pass — JuliaSyntax.jl corpus, 99.9% AST preservation
+ast_equivalence_test: 688/689 pass — JuliaSyntax.jl corpus, 99.9% AST preservation
 ```
 
 ### AST equivalence breakdown (828 snippets)
@@ -55,31 +55,31 @@ ast_equivalence_test: 683/684 pass — JuliaSyntax.jl corpus, 99.9% AST preserva
 | Category | Count |
 |----------|-------|
 | Intentional errors (skipped) | 88 |
-| Grammar gaps (tree-sitter can't parse) | 56 |
-| Testable | 684 |
-| — Passed | 683 |
+| Grammar gaps (tree-sitter can't parse) | 52 |
+| Testable | 689 |
+| — Passed | 688 |
 | — Format errors | 0 |
 | — AST mismatches | 1 (`[1 :a]` juxtaposition vs hcat) |
 
-### Grammar gaps (56) by category
+### Grammar gaps (52) by category
 
 | Category | Count | Status |
 |----------|-------|--------|
 | Partial-parse (by design) | 16 | Won't fix — JuliaSyntax production-specific tests |
 | `$` as operator | 6 | Hard — upstream #161 |
-| Operator subscript suffixes `₁` | 3 | Medium — needs scanner |
 | Multi-paren juxtaposition | 3 | Hard — upstream #92 |
 | Lexer `.operator` conflicts | 3 | Hard — lexer architecture |
 | Array newlines before comma | 3 | Hard — `_terminator` design |
-| Semicolons in call args / vectors | 4 | Medium |
-| Other one-offs | 18 | Varies |
+| `begin`/`end` as indexing values | 2 | Hard — needs deeper parser changes |
+| Other one-offs | 19 | Varies |
 
 ## TODO
 
-- [ ] **Operator subscript suffixes** — `+₁`, `-->₁`, `×ᵀ`. Julia supports 121 suffix chars on operators. Needs scanner support. (3 snippets)
+- [x] **Operator subscript suffixes** — `+₁`, `-->₁`, `×ᵀ`. Fixed via OPERATOR_SUFFIX regex.
+- [x] **Semicolons in vectors** — `[x,y ; z]`, `[x=1, ; y=2]`. Fixed for JuMP filter patterns.
 - [ ] **Array newlines before commas** — `[x\n, y]` fails because `\n` is lexed as `_terminator`. Needs external scanner or `_terminator` redesign. (3 snippets)
-- [ ] **Semicolons as parameters in vectors** — `[x,y ; z]`, `[x=1, ; y=2]`. (4 snippets)
 - [ ] **`$` as operator** — `$$a`, `function $f end`. Upstream #161. (6 snippets)
+- [ ] **`begin`/`end` as indexing values** — `a[begin]`, `a[end-1]`. Needs deeper parser changes. (2 snippets)
 - [ ] **Upstream contributions** — Open PRs on `tree-sitter/tree-sitter-julia` for the fixes in our fork
 - [ ] **Topiary upgrade** — Track topiary-core updates
 

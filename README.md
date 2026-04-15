@@ -19,7 +19,7 @@ cargo run -- --check -f myfile.jl
 
 Topiary formats code by matching tree-sitter parse trees against query patterns (`.scm` files). The queries annotate nodes with formatting directives like `@append_space`, `@append_hardline`, `@append_indent_start`, `@leaf`, etc.
 
-- **`julia.scm`** — All formatting rules (~470 lines)
+- **`julia.scm`** — All formatting rules (~480 lines)
 - **`src/main.rs`** — CLI wrapper
 - **Grammar** — [`pankgeorg/tree-sitter-julia`](https://github.com/pankgeorg/tree-sitter-julia/tree/topiary-julia) branch `topiary-julia` (v0.25.0 + fixes)
 
@@ -35,7 +35,7 @@ Topiary formats code by matching tree-sitter parse trees against query patterns 
 - Comprehensions with `for`/`if` clauses
 - Matrix expressions preserved as `@leaf` (spaces and semicolons are semantic)
 - Bracescat expressions preserved as `@leaf`
-- String/command literals preserved as `@leaf`
+- String/command/`var"..."` literals preserved as `@leaf`
 - Comments preserved
 - Blank line preservation between definitions
 - Semicolons as statement separators normalized to newlines
@@ -47,7 +47,7 @@ Topiary formats code by matching tree-sitter parse trees against query patterns 
 ```
 format_test:          68/68 pass   — hand-crafted input→output tests
 roundtrip_test:       59/59 pass   — tree-sitter corpus, no new ERROR nodes
-ast_equivalence_test: 681/682 pass — JuliaSyntax.jl corpus, 99.9% AST preservation
+ast_equivalence_test: 683/684 pass — JuliaSyntax.jl corpus, 99.9% AST preservation
 ```
 
 ### AST equivalence breakdown (828 snippets)
@@ -55,35 +55,33 @@ ast_equivalence_test: 681/682 pass — JuliaSyntax.jl corpus, 99.9% AST preserva
 | Category | Count |
 |----------|-------|
 | Intentional errors (skipped) | 88 |
-| Grammar gaps (tree-sitter can't parse) | 58 |
-| Testable | 682 |
-| — Passed | 681 |
+| Grammar gaps (tree-sitter can't parse) | 56 |
+| Testable | 684 |
+| — Passed | 683 |
 | — Format errors | 0 |
 | — AST mismatches | 1 (`[1 :a]` juxtaposition vs hcat) |
 
-## Known limitations
+### Grammar gaps (56) by category
 
-### Formatter
-- `(_) . (_) @prepend_hardline` unreliable in tree-sitter-julia (only matches first pair of consecutive siblings)
-- `[1 :a]` — tree-sitter parses as juxtaposition, reformatting changes to vector_expression
-
-### Tree-sitter-julia grammar (58 gaps)
-- **`$` as operator** (7) — `$$a`, `function $f end` — upstream #161
-- **Operator subscript suffixes** (3) — `+₁`, `-->₁` — needs scanner work
-- **Multi-paren juxtaposition** (3) — `(2)(3)x`, `(x-1)y` — upstream #92
-- **`var"..."` identifiers** (2) — needs scanner — upstream #92
-- **Partial-parse tests** (~16) — JuliaSyntax production-specific, not toplevel
-- **Array newlines before commas** (3) — `[x\n, y]` — newline lexed as terminator
-- Other one-offs (~24)
+| Category | Count | Status |
+|----------|-------|--------|
+| Partial-parse (by design) | 16 | Won't fix — JuliaSyntax production-specific tests |
+| `$` as operator | 6 | Hard — upstream #161 |
+| Operator subscript suffixes `₁` | 3 | Medium — needs scanner |
+| Multi-paren juxtaposition | 3 | Hard — upstream #92 |
+| Lexer `.operator` conflicts | 3 | Hard — lexer architecture |
+| Array newlines before comma | 3 | Hard — `_terminator` design |
+| Semicolons in call args / vectors | 4 | Medium |
+| Other one-offs | 18 | Varies |
 
 ## TODO
 
-- [ ] **Array newlines before commas/semicolons** — `[x\n, y]`, `[x \n, ]`, `[a \n ;]` fail because `\n` is lexed as `_terminator` even inside brackets. Fix requires either moving newline handling to the external scanner or redesigning `_terminator` to be context-aware. (3 snippets)
-- [ ] **Operator subscript suffixes** — `+₁`, `-->₁`, `×ᵀ`. Julia supports 121 suffix characters on operators. Needs `token(seq(op, optional(suffix_pattern)))` wrapping in grammar.js or scanner support. (3 snippets)
-- [ ] **`$` as operator** — `$$a`, `$a->b`, `function $f end`. `$` is currently syntactic (interpolation-only). Upstream issue #161. (7 snippets)
-- [ ] **`var"..."` non-standard identifiers** — `var"."`, `@var"'"`. Needs `immediate_identifier` concept in scanner. Upstream issue #92. (2 snippets)
+- [ ] **Operator subscript suffixes** — `+₁`, `-->₁`, `×ᵀ`. Julia supports 121 suffix chars on operators. Needs scanner support. (3 snippets)
+- [ ] **Array newlines before commas** — `[x\n, y]` fails because `\n` is lexed as `_terminator`. Needs external scanner or `_terminator` redesign. (3 snippets)
+- [ ] **Semicolons as parameters in vectors** — `[x,y ; z]`, `[x=1, ; y=2]`. (4 snippets)
+- [ ] **`$` as operator** — `$$a`, `function $f end`. Upstream #161. (6 snippets)
 - [ ] **Upstream contributions** — Open PRs on `tree-sitter/tree-sitter-julia` for the fixes in our fork
-- [ ] **Topiary upgrade** — Track topiary-core updates for better anonymous token handling
+- [ ] **Topiary upgrade** — Track topiary-core updates
 
 ## Dependencies
 

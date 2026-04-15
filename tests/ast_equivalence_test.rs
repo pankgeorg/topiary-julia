@@ -22,9 +22,9 @@ const JULIASYNTAX_CORPUS: &str = include_str!("corpus/juliasyntax_parser.jl");
 // If a fix reduces a count, update the constant so regressions are caught.
 
 /// Snippets where both tree-sitter AND JuliaSyntax agree it's an error (skip).
-const EXPECTED_INTENTIONAL_ERRORS: usize = 86;
+const EXPECTED_INTENTIONAL_ERRORS: usize = 87;
 /// Valid Julia that tree-sitter-julia can't parse yet (JuliaSyntax has no error).
-const EXPECTED_GRAMMAR_GAPS: usize = 48;
+const EXPECTED_GRAMMAR_GAPS: usize = 44;
 /// Snippets where formatting introduces new ERROR nodes.
 const EXPECTED_FORMAT_ERRORS: usize = 0;
 /// Snippets where formatting changes the AST structure.

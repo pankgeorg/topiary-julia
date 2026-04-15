@@ -28,7 +28,7 @@ const EXPECTED_GRAMMAR_GAPS: usize = 56;
 /// Snippets where formatting introduces new ERROR nodes.
 const EXPECTED_FORMAT_ERRORS: usize = 0;
 /// Snippets where formatting changes the AST structure.
-const EXPECTED_AST_MISMATCHES: usize = 3;
+const EXPECTED_AST_MISMATCHES: usize = 1;
 
 // ─── Unit tests for extraction logic ────────────────────────────
 

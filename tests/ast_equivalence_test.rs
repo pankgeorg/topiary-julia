@@ -24,7 +24,10 @@ const JULIASYNTAX_CORPUS: &str = include_str!("corpus/juliasyntax_parser.jl");
 /// Snippets where both tree-sitter AND JuliaSyntax agree it's an error (skip).
 const EXPECTED_INTENTIONAL_ERRORS: usize = 87;
 /// Valid Julia that tree-sitter-julia can't parse yet (JuliaSyntax has no error).
-const EXPECTED_GRAMMAR_GAPS: usize = 44;
+/// Notable: `in"str"` regressed when 'in' became a contextual identifier — string
+/// macro prefix context doesn't use the _primary_expression alias. Accept the
+/// tradeoff since the identifier change fixed far more (see commit 5880b1e).
+const EXPECTED_GRAMMAR_GAPS: usize = 45;
 /// Snippets where formatting introduces new ERROR nodes.
 const EXPECTED_FORMAT_ERRORS: usize = 0;
 /// Snippets where formatting changes the AST structure.
@@ -160,12 +163,9 @@ fn juliasyntax_corpus() {
     }
 
     if !grammar_gaps.is_empty() {
-        eprintln!("\n--- Grammar gaps (first 10) ---");
-        for (line, code) in grammar_gaps.iter().take(10) {
+        eprintln!("\n--- Grammar gaps (all) ---");
+        for (line, code) in grammar_gaps.iter() {
             eprintln!("  L{line}: {code:?}");
-        }
-        if grammar_gaps.len() > 10 {
-            eprintln!("  ... and {} more", grammar_gaps.len() - 10);
         }
     }
 

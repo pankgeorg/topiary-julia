@@ -1,0 +1,6 @@
+#!/bin/bash
+# tstest — run tree-sitter corpus tests for our tree-sitter-julia grammar.
+# Passes through any args to `tree-sitter test`.
+set -e
+cd /home/pgeorgakopoulos/tree-sitter-julia
+tree-sitter test "$@"

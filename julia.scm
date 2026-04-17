@@ -9,6 +9,7 @@
   (command_literal)
   (prefixed_command_literal)
   (character_literal)
+  (identifier)
   (var_identifier)
   (line_comment)
   (block_comment)
@@ -60,28 +61,49 @@
 
 ;; --- function / macro ---
 
+;; Non-empty function: indent block
 (function_definition
   (signature) @append_hardline @append_indent_start
+  (block)
   "end" @prepend_hardline @prepend_indent_end @append_hardline
+)
+;; Empty function: keep single-line (function f end, function f() end)
+(function_definition
+  (signature) @append_space
+  .
+  "end" @append_hardline
 )
 
 (macro_definition
   (signature) @append_hardline @append_indent_start
+  (block)
   "end" @prepend_hardline @prepend_indent_end @append_hardline
+)
+(macro_definition
+  (signature) @append_space
+  .
+  "end" @append_hardline
 )
 
 ;; --- struct ---
 
 (struct_definition
   (type_head) @append_hardline @append_indent_start
+  (block)
   "end" @prepend_hardline @prepend_indent_end @append_hardline
+)
+(struct_definition
+  (type_head) @append_space
+  .
+  "end" @append_hardline
 )
 
 ;; --- module ---
 
+;; Module bodies are NOT indented (Julia convention, matches Runic/JuliaFormatter)
 (module_definition
-  name: (_) @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  name: (_)
+  "end" @prepend_hardline @append_hardline
 )
 (module_definition
   (block) @prepend_hardline
@@ -214,7 +236,11 @@
 (while_statement ";" @delete)
 (for_statement ";" @delete)
 (if_statement ";" @delete)
+(elseif_clause ";" @delete)
+(else_clause ";" @delete)
 (try_statement ";" @delete)
+(catch_clause ";" @delete)
+(finally_clause ";" @delete)
 (function_definition ";" @delete)
 (struct_definition ";" @delete)
 (module_definition ";" @delete)
@@ -222,6 +248,7 @@
 (compound_statement ";" @delete)
 (macro_definition ";" @delete)
 (do_clause ";" @delete)
+(quote_statement ";" @delete)
 
 ;; For/let: hardline before block, comma spacing for multi-binding.
 (for_statement (block) @prepend_hardline)
@@ -308,8 +335,10 @@
 
 (argument_list
   "(" @append_empty_softline @append_indent_start
-  "," @append_spaced_softline
   ")" @prepend_empty_softline @prepend_indent_end
+)
+(argument_list
+  "," @append_spaced_softline
 )
 
 (argument_list
@@ -322,9 +351,14 @@
 
 (tuple_expression
   "(" @append_empty_softline @append_indent_start
-  "," @append_spaced_softline
   ")" @prepend_empty_softline @prepend_indent_end
 )
+(tuple_expression
+  "," @append_spaced_softline
+)
+;; Remove space before ) when preceded by trailing comma: (a,) not (a, )
+(tuple_expression "," . ")" @prepend_antispace)
+(argument_list "," . ")" @prepend_antispace)
 
 (parenthesized_expression
   "(" @append_empty_softline @append_indent_start
@@ -333,14 +367,18 @@
 
 (vector_expression
   "[" @append_empty_softline @append_indent_start
-  "," @append_spaced_softline
   "]" @prepend_empty_softline @prepend_indent_end
+)
+(vector_expression
+  "," @append_spaced_softline
 )
 
 (curly_expression
   "{" @append_empty_softline @append_indent_start
-  "," @append_spaced_softline
   "}" @prepend_empty_softline @prepend_indent_end
+)
+(curly_expression
+  "," @append_spaced_softline
 )
 
 ;; Matrix expressions: content is semantically significant.
@@ -365,6 +403,11 @@
 (line_comment) @prepend_input_softline @append_hardline
 (block_comment) @prepend_input_softline @append_hardline
 
+;; Open tuples (implicit, no parens): a, b, c
+(open_tuple
+  "," @append_space
+)
+
 ;; =============================================================
 ;; 9. Import / using / export formatting
 ;; =============================================================
@@ -377,6 +420,7 @@
 (import_statement "," @append_space)
 (using_statement "," @append_space)
 (export_statement "," @append_space)
+(public_statement "," @append_space)
 
 (import_alias
   "as" @prepend_space
@@ -411,6 +455,9 @@
 
 (for_clause
   "for" @prepend_space @append_space
+)
+(for_clause
+  "," @append_space
 )
 (if_clause
   "if" @prepend_space @append_space

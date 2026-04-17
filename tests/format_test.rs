@@ -80,11 +80,16 @@ mod blocks {
     use super::common;
     format_test!(begin, "begin\na=1\nb=2\nend\n", "begin\n    a = 1\n    b = 2\nend");
     format_test!(module_basic, "module MyMod\nend\n", "module MyMod\nend");
+    format_test!(module_body_no_indent, "module A\nx\nend\n", "module A\nx\nend");
     format_test!(let_simple, "let x=1\nx+y\nend\n", "let x = 1\n    x + y\nend");
     format_test!(let_empty, "let\nend\n", "let\nend");
     format_test!(blank_lines_preserved, "function f()\n1\nend\n\nfunction g()\n2\nend\n", "function f()\n    1\nend\n\nfunction g()\n    2\nend");
     format_test!(do_block, "map([1,2,3]) do x\nx+1\nend\n", "map([1, 2, 3]) do x\n    x + 1\nend");
     format_test!(do_block_no_args, "open(\"f\") do io\nread(io)\nend\n", "open(\"f\") do io\n    read(io)\nend");
+    // Empty block single-line preservation
+    format_test!(struct_empty, "struct A end\n", "struct A end");
+    format_test!(function_empty, "function f end\n", "function f end");
+    format_test!(function_parens_empty, "function f() end\n", "function f() end");
 }
 
 mod imports {
@@ -109,12 +114,31 @@ mod collections {
     use super::common;
     format_test!(comprehension_basic, "[x^2 for x in 1:10]\n", "[x ^ 2 for x in 1:10]");
     format_test!(comprehension_filtered, "[x for x in xs if x>0]\n", "[x for x in xs if x > 0]");
+    format_test!(comprehension_cartesian, "[x for x in X, y in Y]\n", "[x for x in X, y in Y]");
     format_test!(matrix_vcat, "[x; y; z]\n", "[x; y; z]");
     format_test!(matrix_2x2, "[x y; z w]\n", "[x y; z w]");
     format_test!(matrix_typed_vcat, "T[x; y]\n", "T[x; y]");
     format_test!(matrix_hcat, "[a b c]\n", "[a b c]");
     format_test!(matrix_newline_sep, "[x\ny]\n", "[x\ny]");
     format_test!(string_interpolation, "\"hello $name and $(x+1)\"\n", "\"hello $name and $(x+1)\"");
+    // Trailing comma in tuples
+    format_test!(tuple_trailing_comma, "(a,)\n", "(a,)");
+    // Open tuple spacing
+    format_test!(open_tuple, "a,b\n", "a, b");
+    format_test!(open_tuple_multi, "a,b,c\n", "a, b, c");
+    // Multiline call with trailing comma: 4-space indent, not 8
+    format_test!(call_multiline_trailing, "f(\na,\nb,\n)\n", "f(\n    a,\n    b,\n)");
+    format_test!(vector_multiline_trailing, "[\na,\nb,\n]\n", "[\n    a,\n    b,\n]");
+    // Public statement comma
+    format_test!(public_comma, "public a,b\n", "public a, b");
+    format_test!(export_comma, "export a,b\n", "export a, b");
+}
+
+mod semicolons {
+    use super::common;
+    // Semicolons in else/elseif clauses
+    format_test!(if_else_semicolons, "if a; x; else; y; end\n", "if a\n    x\nelse\n    y\nend");
+    format_test!(if_elseif_semicolons, "if a; x; elseif b; y; else; z; end\n", "if a\n    x\nelseif b\n    y\nelse\n    z\nend");
 }
 
 mod idempotence {

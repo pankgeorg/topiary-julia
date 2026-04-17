@@ -1,0 +1,5 @@
+#!/bin/bash
+# tsgen — regenerate our tree-sitter-julia parser.
+set -e
+cd /home/pgeorgakopoulos/tree-sitter-julia
+tree-sitter generate "$@"

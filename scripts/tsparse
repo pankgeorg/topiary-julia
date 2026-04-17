@@ -1,0 +1,16 @@
+#!/bin/bash
+# tsparse — parse Julia code with our tree-sitter-julia grammar from anywhere.
+# Usage:
+#   tsparse '<julia code>' [--cst|-q|...]
+#   echo '<code>' | tsparse [--stdin] [flags]
+# Heuristic: if first positional arg starts with `-`, treat it as a flag and
+# read code from stdin; otherwise treat it as the code.
+set -e
+cd /home/pgeorgakopoulos/tree-sitter-julia
+
+if [ $# -gt 0 ] && [[ "$1" != -* ]]; then
+  code="$1"; shift
+  printf "%s" "$code" | tree-sitter parse /dev/stdin "$@"
+else
+  tree-sitter parse /dev/stdin "$@"
+fi

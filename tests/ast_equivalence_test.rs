@@ -29,7 +29,7 @@ const EXPECTED_INTENTIONAL_ERRORS: usize = 89;
 /// - `x' y`, `f'ᵀ`, `1where'c'` regressed when juxtaposition became
 ///   whitespace-sensitive (juxtaposition fix). Previously parsed as juxtaposition
 ///   (wrong AST); now an error (JuliaSyntax does partial-parse, tree-sitter can't).
-const EXPECTED_GRAMMAR_GAPS: usize = 31;
+const EXPECTED_GRAMMAR_GAPS: usize = 24;
 /// Snippets where formatting introduces new ERROR nodes.
 const EXPECTED_FORMAT_ERRORS: usize = 0;
 /// Snippets where formatting changes the AST structure.

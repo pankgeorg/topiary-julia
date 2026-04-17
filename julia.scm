@@ -65,94 +65,116 @@
 (function_definition
   (signature) @append_hardline @append_indent_start
   (block)
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
 ;; Empty function: keep single-line (function f end, function f() end)
 (function_definition
   (signature) @append_space
   .
-  "end" @append_hardline
+  "end"
 )
+(source_file (function_definition) @append_hardline)
+(block (function_definition) @append_hardline)
 
 (macro_definition
   (signature) @append_hardline @append_indent_start
   (block)
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
 (macro_definition
   (signature) @append_space
   .
-  "end" @append_hardline
+  "end"
 )
+(source_file (macro_definition) @append_hardline)
+(block (macro_definition) @append_hardline)
 
 ;; --- struct ---
 
 (struct_definition
   (type_head) @append_hardline @append_indent_start
   (block)
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
 (struct_definition
   (type_head) @append_space
   .
-  "end" @append_hardline
+  "end"
 )
+(source_file (struct_definition) @append_hardline)
+(block (struct_definition) @append_hardline)
 
 ;; --- module ---
 
 ;; Module bodies are NOT indented (Julia convention, matches Runic/JuliaFormatter)
 (module_definition
   name: (_)
-  "end" @prepend_hardline @append_hardline
+  "end" @prepend_hardline
 )
 (module_definition
   (block) @prepend_hardline
 )
+(source_file (module_definition) @append_hardline)
+(block (module_definition) @append_hardline)
 
 ;; --- abstract / primitive type ---
 ;; Single-line: `abstract type T end`, `primitive type T 64 end`
 
 (abstract_definition
   (type_head) @append_space
-  "end" @append_hardline
+  "end"
 )
+(source_file (abstract_definition) @append_hardline)
+(block (abstract_definition) @append_hardline)
 
 (primitive_definition
   (type_head) @append_space
   (integer_literal) @append_space
-  "end" @append_hardline
+  "end"
 )
+(source_file (primitive_definition) @append_hardline)
+(block (primitive_definition) @append_hardline)
 
 ;; --- if ---
 
 (if_statement
   condition: (_) @append_hardline @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
+;; Hardline AFTER if_statement only when it's a statement (child of source_file
+;; or block), not when it's part of a larger expression like (if ... end)::Bool.
+(source_file (if_statement) @append_hardline)
+(block (if_statement) @append_hardline)
 
 ;; --- for ---
 
 (for_statement
   "for" @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
+(source_file (for_statement) @append_hardline)
+(block (for_statement) @append_hardline)
 
 ;; --- while ---
 
 (while_statement
   condition: (_) @append_hardline @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
+(source_file (while_statement) @append_hardline)
+(block (while_statement) @append_hardline)
 
 ;; --- try ---
 
 (try_statement
   "try" @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
 (try_statement
   (block) @prepend_hardline
 )
+(source_file (try_statement) @append_hardline)
+(block (try_statement) @append_hardline)
 
 ;; --- begin / let / quote ---
 
@@ -160,16 +182,22 @@
   "begin" @append_hardline @append_indent_start
   "end" @prepend_hardline @prepend_indent_end
 )
+(source_file (compound_statement) @append_hardline)
+(block (compound_statement) @append_hardline)
 
 (let_statement
   "let" @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
+(source_file (let_statement) @append_hardline)
+(block (let_statement) @append_hardline)
 
 (quote_statement
   "quote" @append_hardline @append_indent_start
-  "end" @prepend_hardline @prepend_indent_end @append_hardline
+  "end" @prepend_hardline @prepend_indent_end
 )
+(source_file (quote_statement) @append_hardline)
+(block (quote_statement) @append_hardline)
 
 ;; --- do clause ---
 

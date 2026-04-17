@@ -75,6 +75,9 @@ mod operators {
     format_test!(block_type_annotation, "begin x end::T\n", "begin\n    x\nend::T");
     format_test!(broadcast_call, "f.(x)\n", "f.(x)");
     format_test!(broadcast_op, "x .+ y\n", "x .+ y");
+    format_test!(range_flush, "1:3\n", "1:3");
+    format_test!(range_spaced, "a : b\n", "a : b");
+    format_test!(range_with_exprs, "x + 1 : 3\n", "x + 1 : 3");
 }
 
 mod blocks {

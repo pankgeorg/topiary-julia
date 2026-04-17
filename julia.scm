@@ -321,6 +321,12 @@
   (operator) @prepend_space @append_space
 )
 
+;; Spaced range `a : b` emits an operator child; preserve the spacing.
+;; The flush form `a:b` has no operator child — nothing to match.
+(range_expression
+  (operator) @prepend_space @append_space
+)
+
 (compound_assignment_expression
   (operator) @prepend_space @append_space
 )

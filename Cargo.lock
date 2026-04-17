@@ -896,7 +896,7 @@ dependencies = [
 [[package]]
 name = "tree-sitter-julia"
 version = "0.25.0"
-source = "git+https://github.com/pankgeorg/tree-sitter-julia?branch=topiary-julia#bd5cc1ef044a7eb7b7f934df3b55a5196d8f86ae"
+source = "git+https://github.com/pankgeorg/tree-sitter-julia?branch=topiary-julia#f181b43867110b15f071830c840c268b2c715a2c"
 dependencies = [
  "cc",
  "tree-sitter-language",

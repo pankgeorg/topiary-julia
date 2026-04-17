@@ -78,6 +78,18 @@ mod operators {
     format_test!(range_flush, "1:3\n", "1:3");
     format_test!(range_spaced, "a : b\n", "a : b");
     format_test!(range_with_exprs, "x + 1 : 3\n", "x + 1 : 3");
+    // `1where 'c'` — keyword rejection in juxtaposition; parses as where_expr.
+    format_test!(keyword_after_integer_where, "1where 'c'\n", "1 where 'c'");
+    // `1in foo` — `in` keyword rejected by juxtaposition → binary comparison.
+    format_test!(keyword_after_integer_in, "1in foo\n", "1 in foo");
+    // Unary applied to integer without space is juxtaposition (`1√x` = `1*√x`).
+    format_test!(juxt_unary_rhs, "1√x\n", "1√x");
+    // Call expression as juxtaposition LHS: `f(x)y`.
+    format_test!(juxt_call_lhs, "f(x)y\n", "f(x)y");
+    // `(2)(3)x` — tree-sitter parses `(2)(3)` as call, then juxt with `x`.
+    format_test!(juxt_parens_call, "(2)(3)x\n", "(2)(3)x");
+    // Unicode assignment operators as bare operators.
+    format_test!(unicode_assign_bare, "≔\n", "≔");
 }
 
 mod blocks {
@@ -100,6 +112,32 @@ mod blocks {
     format_test!(struct_empty, "struct A end\n", "struct A end");
     format_test!(function_empty, "function f end\n", "function f end");
     format_test!(function_parens_empty, "function f() end\n", "function f() end");
+    // Function definition with interpolated signature.
+    format_test!(function_interp_signature, "function $f end\n", "function $f end");
+    // Function with operator signature (zero-method definition).
+    format_test!(function_operator_signature, "function ⊇ end\n", "function ⊇ end");
+    // catch clause accepts interpolation as exception variable.
+    format_test!(try_catch_interpolation, "try x catch $e y end\n", "try\n    x\ncatch $e\n    y\nend");
+}
+
+mod macros_extras {
+    use super::common;
+    // Parenthesized macro name: `@(A) x`.
+    format_test!(macro_parenthesized, "@(A) x\n", "@(A) x");
+    // Contextual-keyword as string macro prefix (`in"..."`, `isa"..."`).
+    format_test!(string_macro_contextual_keyword, "in\"str\"\n", "in\"str\"");
+    // Contextual keyword as field name (`p.in`).
+    format_test!(field_access_contextual_keyword, "p.in\n", "p.in");
+}
+
+mod imports_extras {
+    use super::common;
+    // Operator in import path (`import A.⋆`).
+    format_test!(import_operator, "import A.⋆\n", "import A.⋆");
+    // Chained operator in import path.
+    format_test!(import_operator_chain, "import A.⋆.f\n", "import A.⋆.f");
+    // Leading-dot import with operator name.
+    format_test!(import_relative_operator, "import .⋆\n", "import .⋆");
 }
 
 mod imports {

@@ -90,6 +90,12 @@ mod blocks {
     format_test!(blank_lines_preserved, "function f()\n1\nend\n\nfunction g()\n2\nend\n", "function f()\n    1\nend\n\nfunction g()\n    2\nend");
     format_test!(do_block, "map([1,2,3]) do x\nx+1\nend\n", "map([1, 2, 3]) do x\n    x + 1\nend");
     format_test!(do_block_no_args, "open(\"f\") do io\nread(io)\nend\n", "open(\"f\") do io\n    read(io)\nend");
+    // Inline do: `f(x) do y body end` — single-line with params + body
+    format_test!(do_block_inline, "f(x) do y body end\n", "f(x) do y\n    body\nend");
+    // Do with params only (no body): `f() do io end`
+    format_test!(do_block_params_only, "f() do io end\n", "f() do io\nend");
+    // let with inline single-line: `let x=1,y=2 end` — gets expanded to multi-line
+    format_test!(let_inline_multi_binding, "let x=1,y=2 end\n", "let x = 1, y = 2\nend");
     // Empty block single-line preservation
     format_test!(struct_empty, "struct A end\n", "struct A end");
     format_test!(function_empty, "function f end\n", "function f end");

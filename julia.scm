@@ -129,8 +129,7 @@
 
 (primitive_definition
   (type_head) @append_space
-  (integer_literal) @append_space
-  "end"
+  "end" @prepend_space
 )
 (source_file (primitive_definition) @append_hardline)
 (block (primitive_definition) @append_hardline)

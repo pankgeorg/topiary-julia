@@ -62,6 +62,7 @@ mod types {
     format_test!(abstract_type, "abstract type Shape end\n", "abstract type Shape end");
     format_test!(abstract_subtype, "abstract type Circle<:Shape end\n", "abstract type Circle <: Shape end");
     format_test!(primitive_type, "primitive type UInt8 8 end\n", "primitive type UInt8 8 end");
+    format_test!(primitive_type_expr, "primitive type X sizeof(Ptr) * 8 end\n", "primitive type X sizeof(Ptr) * 8 end");
 }
 
 mod operators {

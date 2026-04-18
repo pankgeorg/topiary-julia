@@ -225,7 +225,7 @@ const TRIVIA_KINDS = Set(["line_comment", "block_comment"])
 # Pseudo-children emitted by `topiary-julia parse` to surface semantics the
 # CST would otherwise hide (`mutable` keyword on struct, trailing comma on
 # argument/tuple/vector lists, triple-quoted string marker).
-const MARKER_KINDS = Set(["trailing_comma", "triple_quoted", "relative_dot", "parameters_separator", "fold_sign", "matrix_semicolon", "blank_after", "raw_content"])
+const MARKER_KINDS = Set(["trailing_comma", "triple_quote", "triple_backtick", "relative_dot", "parameters_separator", "fold_sign", "matrix_semicolon", "blank_after", "raw_content"])
 
 function _non_trivia(ns::Vector{Node})
     [c for c in ns if !(c.kind in TRIVIA_KINDS) && !(c.kind in MARKER_KINDS)]
@@ -656,7 +656,7 @@ function _string_children!(r::Translator.Node, kids::Vector{Translator.Node};
 end
 
 RULES["string_literal"] = function (n)
-    triple = _has_marker(n, "triple_quoted")
+    triple = any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
     r = Node(triple ? "string-s" : "string")
     _string_children!(r, _non_trivia(n.children); triple=triple)
     # JuliaSyntax always includes at least one text child, even for `""`.
@@ -679,7 +679,7 @@ RULES["prefixed_string_literal"] = function (n)
     # `(var NAME)` with the interior treated as an identifier.
     prefix = _child_by_kind(n, "identifier")
     prefix_name = prefix === nothing ? "?" : (prefix.text === nothing ? "?" : prefix.text)
-    triple = _has_marker(n, "triple_quoted")
+    triple = any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
     if prefix_name == "var"
         r = Node("var")
         # Concatenate all content/escape_sequence text into a single name.
@@ -747,7 +747,7 @@ RULES["prefixed_string_literal"] = function (n)
 end
 
 RULES["command_literal"] = function (n)
-    triple = _has_marker(n, "triple_quoted")
+    triple = any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
     r = Node(triple ? "cmdstring-s-r" : "cmdstring-r")
     # Prefer the `(raw_content "…")` child injected by the Rust side — it
     # preserves interpolation source (`$x`, `$(f(y))`) as literal text,
@@ -2076,7 +2076,7 @@ end
 
 # Imports / exports
 
-"Count `(relative_dot)` markers injected by the Rust side for an
+"Count `(relative_dot)` named children emitted by tree-sitter-julia for an
 `import_path` node. Used to emit `(importpath . . X)` JuliaSyntax form."
 function _dot_count(n::Node)
     count(c -> c.kind == "relative_dot", n.children)

@@ -129,57 +129,32 @@ fn node_to_sexp(node: &Node, source: &str) -> String {
                 }
             }
         }
-        // Relative-import dot count: tree-sitter collapses `.X`, `..X`,
-        // `...X` into identical `import_path (identifier "X")` sexps. Count
-        // leading dots in the raw source so the translator can emit the
-        // `(importpath . X)`, `(importpath . . X)` forms JuliaSyntax uses.
-        if kind == "import_path" {
+        // Relative-import dot count is now encoded as named `(relative_dot)`
+        // children emitted by tree-sitter-julia — no source counting needed.
+        // Triple-quoting is now surfaced by the grammar via named children
+        // (`triple_quote`, `triple_backtick`). The translator detects the
+        // quoting style from the CST directly — no source inspection needed.
+        //
+        // Command literals still get a `(raw_content)` marker: JuliaSyntax
+        // emits the full interpolated text as one string, so we expose the
+        // raw inner bytes for the translator to copy verbatim.
+        if kind == "command_literal" || kind == "prefixed_command_literal" {
             let text = &source[node.start_byte() as usize..node.end_byte() as usize];
-            let dot_count = text.chars().take_while(|&c| c == '.').count();
-            for _ in 0..dot_count {
-                children_sexp.insert(0, "(relative_dot)".to_string());
-            }
-        }
-        // Triple-quoted string/command literals: JuliaSyntax emits a `-s`
-        // head variant (`string-s`, `cmdstring-s`) and strips the leading
-        // newline + common indentation. The CST doesn't distinguish quoting
-        // style, so detect it by looking at the leading delimiter of the
-        // source text. A prefixed literal has an identifier prefix first.
-        if kind == "string_literal" || kind == "prefixed_string_literal"
-            || kind == "command_literal" || kind == "prefixed_command_literal"
-        {
-            let text = &source[node.start_byte() as usize..node.end_byte() as usize];
-            let opener = if kind == "string_literal" || kind == "command_literal" {
+            let opener = if kind == "command_literal" {
                 text
             } else {
-                // Skip the leading identifier (prefix).
                 text.trim_start_matches(|c: char| c.is_alphanumeric() || c == '_')
             };
-            let is_str = kind == "string_literal" || kind == "prefixed_string_literal";
-            let is_triple = if is_str {
-                opener.starts_with("\"\"\"")
-            } else {
-                opener.starts_with("```")
+            let is_triple = opener.starts_with("```");
+            let delim_len = if is_triple { 3 } else { 1 };
+            let (inner_start, inner_end) = {
+                let prefix_len = text.len() - opener.len();
+                let start = prefix_len + delim_len;
+                let end = text.len().saturating_sub(delim_len);
+                (start, end.max(start))
             };
-            if is_triple {
-                children_sexp.push("(triple_quoted)".to_string());
-            }
-            // Command literals: JuliaSyntax keeps the full interpolated
-            // source text as a single string. Expose the raw inner text so
-            // the translator can copy it verbatim.
-            if kind == "command_literal" || kind == "prefixed_command_literal" {
-                let delim_len = if is_triple { 3 } else { 1 };
-                // Strip leading identifier (prefix) + opening delimiter and
-                // trailing closing delimiter to get the interior bytes.
-                let (inner_start, inner_end) = {
-                    let prefix_len = text.len() - opener.len();
-                    let start = prefix_len + delim_len;
-                    let end = text.len().saturating_sub(delim_len);
-                    (start, end.max(start))
-                };
-                let inner = &text[inner_start..inner_end];
-                children_sexp.push(format!("(raw_content {})", quote_preserving_utf8(inner)));
-            }
+            let inner = &text[inner_start..inner_end];
+            children_sexp.push(format!("(raw_content {})", quote_preserving_utf8(inner)));
         }
         // Trailing comma and `;` inside tuple/argument/vector/curly lists are
         // now named CST children (`trailing_comma`, `parameters_separator`)

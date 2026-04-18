@@ -375,10 +375,10 @@
 )
 
 (argument_list
-  ";" @append_spaced_softline
+  (parameters_separator) @append_spaced_softline
 )
-;; Consecutive semicolons (;;): prevent space between them.
-(argument_list ";" . ";" @prepend_antispace)
+;; Consecutive parameters_separators (`;  ;`): prevent space between them.
+(argument_list (parameters_separator) . (parameters_separator) @prepend_antispace)
 
 ;; Named/keyword arguments use (assignment) in v0.25.0, already handled above.
 

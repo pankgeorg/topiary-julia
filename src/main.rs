@@ -3,16 +3,22 @@ use std::io::{self, BufWriter, Read, Write};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use topiary_core::{formatter, Language, Operation, TopiaryQuery};
 use topiary_tree_sitter_facade::Language as Grammar;
+
+mod parse;
 
 const QUERY: &str = include_str!("../julia.scm");
 
 #[derive(Parser)]
 #[command(name = "topiary-julia", about = "Format Julia source code")]
 struct Cli {
-    /// Input file (reads from stdin if omitted)
+    #[command(subcommand)]
+    command: Option<Command>,
+
+    // ─── Legacy top-level flags (format command is the default) ────────
+    /// Input file (reads from stdin if omitted). Used when no subcommand is given.
     input: Option<PathBuf>,
 
     /// Output file (writes to stdout if omitted)
@@ -32,6 +38,16 @@ struct Cli {
     check: bool,
 }
 
+#[derive(Subcommand)]
+enum Command {
+    /// Print the tree-sitter-julia CST as an S-expression (reads stdin).
+    ///
+    /// Exit codes:
+    ///   0 — parse succeeded with no ERROR/MISSING nodes
+    ///   2 — parse produced ERROR/MISSING nodes; sexp is still written to stdout
+    Parse,
+}
+
 fn make_language() -> Result<Language, Box<dyn std::error::Error>> {
     let grammar: Grammar = tree_sitter_julia::LANGUAGE.into();
     let query = match TopiaryQuery::new(&grammar, QUERY) {
@@ -49,10 +65,35 @@ fn make_language() -> Result<Language, Box<dyn std::error::Error>> {
     })
 }
 
-fn main() -> ExitCode {
-    env_logger::init();
-    let cli = Cli::parse();
+fn read_stdin() -> io::Result<String> {
+    let mut buf = String::new();
+    io::stdin().read_to_string(&mut buf)?;
+    Ok(buf)
+}
 
+fn run_parse() -> ExitCode {
+    let input = match read_stdin() {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("Failed to read stdin: {e}");
+            return ExitCode::FAILURE;
+        }
+    };
+    let sexp = parse::tree_to_sexp(&input);
+    let has_errors = parse::source_has_errors(&input);
+
+    let stdout = io::stdout();
+    let mut handle = BufWriter::new(stdout.lock());
+    let _ = writeln!(handle, "{sexp}");
+
+    if has_errors {
+        ExitCode::from(2)
+    } else {
+        ExitCode::SUCCESS
+    }
+}
+
+fn run_format(cli: &Cli) -> ExitCode {
     let language = match make_language() {
         Ok(l) => l,
         Err(e) => {
@@ -74,14 +115,13 @@ fn main() -> ExitCode {
                 return ExitCode::FAILURE;
             }
         },
-        None => {
-            let mut buf = String::new();
-            if let Err(e) = io::stdin().read_to_string(&mut buf) {
+        None => match read_stdin() {
+            Ok(s) => s,
+            Err(e) => {
                 eprintln!("Failed to read stdin: {e}");
                 return ExitCode::FAILURE;
             }
-            buf
-        }
+        },
     };
 
     let mut output_buf = Vec::new();
@@ -121,4 +161,14 @@ fn main() -> ExitCode {
     }
 
     ExitCode::SUCCESS
+}
+
+fn main() -> ExitCode {
+    env_logger::init();
+    let cli = Cli::parse();
+
+    match cli.command {
+        Some(Command::Parse) => run_parse(),
+        None => run_format(&cli),
+    }
 }

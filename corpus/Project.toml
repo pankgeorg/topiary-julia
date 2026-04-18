@@ -1,0 +1,17 @@
+name = "TopiaryJuliaCorpus"
+authors = ["topiary-julia contributors"]
+
+# These are the four family roots the user cares about. Pkg.instantiate
+# resolves transitive deps into Manifest.toml (committed).
+[deps]
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+
+# Tooling deps used by run_checks.jl / report.jl.
+JuliaSyntax = "70703baa-626e-46a2-a12c-08ffd08c73b4"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"

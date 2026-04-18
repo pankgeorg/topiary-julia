@@ -22,24 +22,19 @@ const JULIASYNTAX_CORPUS: &str = include_str!("corpus/juliasyntax_parser.jl");
 // If a fix reduces a count, update the constant so regressions are caught.
 
 /// Snippets where both tree-sitter AND JuliaSyntax agree it's an error (skip).
-const EXPECTED_INTENTIONAL_ERRORS: usize = 89;
+const EXPECTED_INTENTIONAL_ERRORS: usize = 85;
 /// Valid Julia that tree-sitter-julia can't parse yet (JuliaSyntax has no error).
 /// Notable regressions for net wins:
 /// - `in"str"` regressed when 'in' became a contextual identifier (commit 5880b1e).
 /// - `x' y`, `f'ᵀ`, `1where'c'` regressed when juxtaposition became
 ///   whitespace-sensitive (juxtaposition fix). Previously parsed as juxtaposition
 ///   (wrong AST); now an error (JuliaSyntax does partial-parse, tree-sitter can't).
-const EXPECTED_GRAMMAR_GAPS: usize = 24;
+const EXPECTED_GRAMMAR_GAPS: usize = 23;
 /// Snippets where formatting introduces new ERROR nodes.
 const EXPECTED_FORMAT_ERRORS: usize = 0;
 /// Snippets where formatting changes the AST structure.
 /// The `[1 :a]` mismatch was resolved by making juxtaposition whitespace-sensitive.
-///
-/// `+(\n;\n;\n)` (L263): the formatter collapses `\n;\n;\n` to `;;`, merging
-/// two `_semicolon` tokens into one. Before the `parameters_separator` grammar
-/// change this was invisible in the CST; now visible. The formatter should
-/// preserve the separation; tracked as a follow-up formatter bug.
-const EXPECTED_AST_MISMATCHES: usize = 1;
+const EXPECTED_AST_MISMATCHES: usize = 0;
 
 // ─── Unit tests for extraction logic ────────────────────────────
 

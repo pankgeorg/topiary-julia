@@ -19,6 +19,8 @@
 
 module Translator
 
+using JuliaSyntax: JuliaSyntax
+
 export Node, parse_sexp, translate, write_sexp, sexp_string
 
 # ─── Tree data structure ───────────────────────────────────────────
@@ -305,7 +307,21 @@ function _leaf_rule(kind::String)
     end
 end
 
-RULES["identifier"]       = _leaf_rule("identifier")
+# JuliaSyntax normalizes identifiers via NFC + a few Latin-lookalike mappings
+# (e.g. `ɛ` U+025B → `ε` U+03B5). Use the same normalization so structure
+# match compares semantically-equal identifiers.
+function _normalize_identifier_text(text::String)::String
+    try
+        JuliaSyntax.normalize_identifier(text)
+    catch
+        text
+    end
+end
+
+RULES["identifier"] = function (n::Node)
+    text = n.text === nothing ? "" : n.text
+    literal(_normalize_identifier_text(text))
+end
 RULES["var_identifier"]   = _leaf_rule("var_identifier")
 RULES["boolean_literal"]  = _leaf_rule("boolean_literal")
 RULES["operator"]         = _leaf_rule("operator")
@@ -522,7 +538,13 @@ function _split_triple(pieces::Vector{Any})::Vector{Any}
         # Skip the first line if it's on the opener line.
         first_line_done = opens_with_nl
         for i in eachindex(pieces)
-            if pieces[i] isa String
+            if pieces[i] === :continuation_boundary
+                # `\<newline>` continuation: the following piece starts on a
+                # fresh source line and gets its indent stripped.
+                at_line_start = true
+                first_line_done = true
+                continue
+            elseif pieces[i] isa String
                 s = pieces[i]::String
                 buf = IOBuffer()
                 j = 1
@@ -562,7 +584,11 @@ function _split_triple(pieces::Vector{Any})::Vector{Any}
     # segment). Interpolations pass through unchanged.
     out = Any[]
     for p in pieces
-        if p isa String
+        if p === :continuation_boundary
+            # Boundary marker — drop, it has already served its purpose in
+            # the indent-strip pass above.
+            continue
+        elseif p isa String
             s = p::String
             start = 1
             while start <= lastindex(s)
@@ -613,9 +639,18 @@ function _string_children!(r::Translator.Node, kids::Vector{Translator.Node};
             had_text = true
         elseif c.kind == "escape_sequence"
             text = c.text === nothing ? "" : _decode_tsstr(c.text)
-            if triple && ('\n' in text || '\r' in text)
-                # Protect escape-derived newlines from the triple-string
-                # line-splitter.
+            if triple && (text == "\\\n" || text == "\\\r\n")
+                # Line-continuation escape `\<newline>`. JuliaSyntax splits
+                # the string at this boundary and strips the continuation
+                # line's indent. Push a `:continuation_boundary` sentinel;
+                # `_split_triple` recognises it to reset at_line_start for
+                # the next piece's indent strip, then drops it.
+                flush!()
+                push!(pieces, :continuation_boundary)
+                continue
+            elseif triple && ('\n' in text || '\r' in text)
+                # Protect other escape-derived newlines (literal `\n`, `\r\n`,
+                # etc.) from the triple-string line-splitter.
                 text = replace(text, "\n" => ESCAPE_NL, "\r" => "\r")
             end
             write(buf, text)
@@ -701,23 +736,20 @@ RULES["prefixed_string_literal"] = function (n)
     for c in _non_trivia(n.children)
         c === prefix && continue
         if c.kind == "content"
-            # Raw content — backslashes stay literal (e.g. `\s` in a regex).
             write(text_buf, c.text === nothing ? "" : c.text)
             had_text = true
         elseif c.kind == "escape_sequence"
-            # Julia raw strings only honour one escape: `\"` (and its triple
-            # form). Every other backslash sequence stays literal. Strip the
-            # leading `\` *only* for the quote-escape cases.
-            text = c.text === nothing ? "" : c.text
-            if text == "\\\"" || text == "\\\"\"\""
-                text = text[2:end]
-            end
-            write(text_buf, text)
+            write(text_buf, c.text === nothing ? "" : c.text)
             had_text = true
         end
     end
     if had_text
-        s = String(take!(text_buf))
+        raw_bytes = take!(text_buf)
+        # Apply JuliaSyntax's raw-string escape processing: halve backslash
+        # runs that end at the string delimiter, convert \r/\r\n to \n, etc.
+        out_io = IOBuffer()
+        JuliaSyntax.unescape_raw_string(out_io, raw_bytes, 1, length(raw_bytes) + 1, false)
+        s = String(take!(out_io))
         if triple
             # Apply the same indent-strip + line-split JuliaSyntax uses for
             # triple-quoted strings, then emit each line as a separate child.
@@ -811,17 +843,56 @@ function _is_short_function_lhs(n::Translator.Node)
     return false
 end
 
+"""
+Rewrite `(where ... (where (::-i call T) C_inner) ... C_outer)`
+    →    `(::-i call (where ... (where T C_inner) ... C_outer))`.
+JuliaSyntax emits the LHS form for long functions and the RHS form for
+short-form `f()::T where C_inner where C_outer = v`. Only the RHS shape
+is valid on short-form assignment LHS; the rewrite folds any nesting
+depth of outer `where`s over a single `::-i` node into the return type.
+"""
+function _move_where_inside_typed(lhs::Translator.Node)::Translator.Node
+    lhs.kind == "where" || return lhs
+    # Peel nested `where`s from the outside; collect constraint-child sets
+    # in the order encountered (outermost first).
+    constraints_outer_first = Vector{Vector{Translator.Node}}()
+    cursor = lhs
+    while cursor.kind == "where" && length(cursor.children) >= 2
+        push!(constraints_outer_first, cursor.children[2:end])
+        cursor = cursor.children[1]
+    end
+    # cursor must now be `(::-i call T)` with call = function signature.
+    (cursor.kind == "::-i" && length(cursor.children) == 2) || return lhs
+    call = cursor.children[1]
+    ret_type = cursor.children[2]
+    _is_short_function_lhs(call) || return lhs
+    # Wrap ret_type innermost-first: reversed constraint list.
+    new_type = ret_type
+    for cs in reverse(constraints_outer_first)
+        w = Node("where")
+        push!(w.children, new_type)
+        for c in cs
+            push!(w.children, c)
+        end
+        new_type = w
+    end
+    r = Node("::-i")
+    push!(r.children, call)
+    push!(r.children, new_type)
+    return r
+end
+
 RULES["assignment"] = function (n)
     kids = _non_trivia(n.children)
     lhs = translate(kids[1])
     op_node = kids[2]
     rhs = translate(kids[3])
     head = op_node.text === nothing ? "=" : op_node.text
-    if head == "=" && _is_short_function_lhs(lhs)
-        head = "function-="
-        # Short-form function defs with a prefix operator (`-(x) = …`) keep
-        # the `call-pre` form in JuliaSyntax — unlike `function -(x) end`
-        # which uses `call`. Don't undo the prefix rewrite here.
+    if head == "="
+        lhs = _move_where_inside_typed(lhs)
+        if _is_short_function_lhs(lhs)
+            head = "function-="
+        end
     end
     r = Node(head)
     push!(r.children, lhs)
@@ -1109,6 +1180,31 @@ end
 
 RULES["where_expression"] = function (n)
     kids = _non_trivia(n.children)
+    # Julia parses `T::Type where C` (parameter form) as `T :: (Type where C)` —
+    # `where` binds tighter than `::`. Tree-sitter's CST is the opposite:
+    # `(where_expression (typed_expression T Type) C)`. Rewrap so the
+    # resulting AST is `(::-i T (where Type C))`, matching JuliaSyntax.
+    #
+    # BUT only apply this when the `::` LHS is a simple identifier/tuple
+    # parameter — NOT when it's a function signature `call_expression`.
+    # Function return-type annotations `f(args)::T where C` keep the
+    # original nesting `(where (::-i call T) C)`.
+    if length(kids) >= 2 && kids[1].kind == "typed_expression"
+        te_kids = _non_trivia(kids[1].children)
+        if length(te_kids) == 2 && !(te_kids[1].kind in
+                ("call_expression", "broadcast_call_expression",
+                 "parametrized_type_expression"))
+            inner_where = Node("where")
+            push!(inner_where.children, translate(te_kids[2]))
+            for c in kids[2:end]
+                push!(inner_where.children, translate(c))
+            end
+            r = Node("::-i")
+            push!(r.children, translate(te_kids[1]))
+            push!(r.children, inner_where)
+            return r
+        end
+    end
     r = Node("where")
     for c in kids
         push!(r.children, translate(c))

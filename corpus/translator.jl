@@ -937,20 +937,10 @@ RULES["binary_expression"] = function (n)
             return r
         end
     end
-    if op_text in RIGHT_ASSOC_BINOPS
-        # Flatten a `a op b op c ...` left-leaning tree and right-fold into
-        # `(op a (op b (op c …)))`.
-        operands = _flatten_binary(n, op_text)
-        translated = [translate(c) for c in operands]
-        result = translated[end]
-        for i in length(translated)-1:-1:1
-            r = Node(op_text)
-            push!(r.children, translated[i])
-            push!(r.children, result)
-            result = r
-        end
-        return result
-    end
+    # `&&`, `||`, `->` are now right-associative in the grammar (tree-sitter-
+    # julia af339ed) so `a && b && c` arrives as `(a && (b && c))` — the
+    # default `SYNTACTIC_BINOPS` handler below emits `(&& a (&& b c))`
+    # directly, no flatten-and-refold needed.
     if op_text in FLAT_BINOPS
         # `a + b + c` → `(call-i a + b c)`. Julia defines `+` and `*` as
         # variadic; JuliaSyntax renders them flat.

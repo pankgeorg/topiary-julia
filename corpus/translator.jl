@@ -225,7 +225,7 @@ const TRIVIA_KINDS = Set(["line_comment", "block_comment"])
 # Pseudo-children emitted by `topiary-julia parse` to surface semantics the
 # CST would otherwise hide (`mutable` keyword on struct, trailing comma on
 # argument/tuple/vector lists, triple-quoted string marker).
-const MARKER_KINDS = Set(["trailing_comma", "triple_quoted", "relative_dot", "semicolon", "fold_sign", "matrix_semicolon", "blank_after", "raw_content"])
+const MARKER_KINDS = Set(["trailing_comma", "triple_quoted", "relative_dot", "parameters_separator", "fold_sign", "matrix_semicolon", "blank_after", "raw_content"])
 
 function _non_trivia(ns::Vector{Node})
     [c for c in ns if !(c.kind in TRIVIA_KINDS) && !(c.kind in MARKER_KINDS)]
@@ -1153,19 +1153,19 @@ RULES["arrow_function_expression"] = function (n)
     return r
 end
 
-"Detect the `(trailing_comma)` marker injected by the Rust side."
+"Detect the `trailing_comma` named child emitted by tree-sitter-julia."
 function _has_trailing_comma(n::Node)
     any(c -> c.kind == "trailing_comma", n.children)
 end
 
 # Calls
-"""Split argument_list raw children at the `(semicolon)` sentinel injected
-by the Rust side. Everything after the sentinel becomes a keyword-argument
+"""Split argument_list raw children at the `parameters_separator` named child
+emitted by tree-sitter-julia. Everything after it becomes a keyword-argument
 block wrapped in `(parameters …)`."""
 function _args_with_parameters(args_node::Node)::Vector{Node}
     out = Node[]
     raw = args_node.children
-    semi_idx = findfirst(c -> c.kind == "semicolon", raw)
+    semi_idx = findfirst(c -> c.kind == "parameters_separator", raw)
     if semi_idx === nothing
         for c in _non_trivia(raw)
             push!(out, translate(c))
@@ -1213,9 +1213,9 @@ RULES["call_expression"] = function (n)
         bare = is_dot ? op_text[2:end] : op_text
         if bare in UNARY_PREFIX_CALL_OPS
             pos_args = [c for c in _non_trivia(args_node.children)
-                        if c.kind != "semicolon" && c.kind != "assignment"]
+                        if c.kind != "parameters_separator" && c.kind != "assignment"]
             other = [c for c in _non_trivia(args_node.children)
-                     if c.kind == "semicolon" || c.kind == "assignment"]
+                     if c.kind == "parameters_separator" || c.kind == "assignment"]
             if length(pos_args) == 1 && isempty(other) && !_has_trailing_comma(args_node)
                 r = Node(is_dot ? "dotcall-pre" : "call-pre")
                 push!(r.children, literal(bare))

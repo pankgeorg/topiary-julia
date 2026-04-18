@@ -181,42 +181,14 @@ fn node_to_sexp(node: &Node, source: &str) -> String {
                 children_sexp.push(format!("(raw_content {})", quote_preserving_utf8(inner)));
             }
         }
-        // Trailing comma detection for argument_list / tuple_expression /
-        // vector_expression / curly_expression. JuliaSyntax distinguishes
-        // `call` vs `call-,`, `tuple-p` vs `tuple-p-,`, etc.
-        if kind == "argument_list" || kind == "tuple_expression"
-            || kind == "vector_expression" || kind == "curly_expression"
-        {
-            let text = &source[node.start_byte() as usize..node.end_byte() as usize];
-            // Strip the trailing bracket and any whitespace/newlines before it.
-            let trimmed = text.trim_end();
-            // Ignore closing char; look at what precedes it.
-            let without_close: &str = if !trimmed.is_empty()
-                && (trimmed.ends_with(')') || trimmed.ends_with(']') || trimmed.ends_with('}'))
-            {
-                &trimmed[..trimmed.len() - 1]
-            } else {
-                trimmed
-            };
-            let before_close = without_close.trim_end();
-            if before_close.ends_with(',') {
-                children_sexp.push("(trailing_comma)".to_string());
-            }
-        }
-        // Semicolon detection: `f(a; b=1)` wraps `b=1` in `(parameters ...)`
-        // in JuliaSyntax; `f(a, b=1)` does not. Tree-sitter doesn't preserve
-        // the distinction, so find the `;` position in the raw source (outside
-        // nested brackets + strings) and emit `(semicolon)` as a sentinel
-        // child at the split point. Counts of named children before vs. after
-        // the `;` give the translator the split index.
-        // Matrix `[a b;]` keeps the row wrapper (`(vcat (row a b))`) while
-        // `[a b]` flattens to `(hcat a b)`. Tree-sitter treats both as one
-        // matrix_row; detect a `;` anywhere in the source (outside nested
-        // brackets) to disambiguate.
+        // Trailing comma and `;` inside tuple/argument/vector/curly lists are
+        // now named CST children (`trailing_comma`, `parameters_separator`)
+        // emitted by tree-sitter-julia directly — no source-inspection needed.
+        //
+        // Matrix `[a b;]` still needs a marker: the `;` here is a row
+        // separator, not a kwarg boundary, and tree-sitter-julia keeps it as
+        // an anonymous token.
         if kind == "matrix_expression" {
-            // Matrix expressions use `;` between rows — detect the anonymous
-            // `;` token child (tree-sitter exposes it alongside matrix_row
-            // named children).
             let mut has_semi = false;
             for i in 0..node.child_count() {
                 if let Some(child) = node.child(i) {
@@ -229,30 +201,6 @@ fn node_to_sexp(node: &Node, source: &str) -> String {
             }
             if has_semi {
                 children_sexp.push("(matrix_semicolon)".to_string());
-            }
-        }
-        if kind == "argument_list" || kind == "tuple_expression" {
-            // Walk *all* children (named and anonymous) to find the `;`
-            // token. Scanning raw bytes would mis-classify `'` (adjoint)
-            // as a string delimiter, swallowing the real semicolon.
-            let mut semi_byte: Option<usize> = None;
-            for i in 0..node.child_count() {
-                if let Some(child) = node.child(i) {
-                    let ctext = &source[child.start_byte() as usize..child.end_byte() as usize];
-                    if !child.is_named() && ctext == ";" {
-                        semi_byte = Some(child.start_byte() as usize);
-                        break;
-                    }
-                }
-            }
-            if let Some(sb) = semi_byte {
-                let mut n_before = 0usize;
-                for c in &named_children {
-                    if (c.start_byte() as usize) < sb {
-                        n_before += 1;
-                    }
-                }
-                children_sexp.insert(n_before, "(semicolon)".to_string());
             }
         }
         format!("({kind} {})", children_sexp.join(" "))

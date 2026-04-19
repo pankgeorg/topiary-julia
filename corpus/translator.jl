@@ -639,12 +639,15 @@ function _string_children!(r::Translator.Node, kids::Vector{Translator.Node};
             had_text = true
         elseif c.kind == "escape_sequence"
             text = c.text === nothing ? "" : _decode_tsstr(c.text)
-            if triple && (text == "\\\n" || text == "\\\r\n")
+            if text == "\\\n" || text == "\\\r\n"
                 # Line-continuation escape `\<newline>`. JuliaSyntax splits
-                # the string at this boundary and strips the continuation
-                # line's indent. Push a `:continuation_boundary` sentinel;
-                # `_split_triple` recognises it to reset at_line_start for
-                # the next piece's indent strip, then drops it.
+                # the string at this boundary and consumes any leading
+                # whitespace on the continuation line. Works for both triple
+                # and single-quoted strings. Push a `:continuation_boundary`
+                # sentinel; the triple-string indent-strip uses it to reset
+                # at_line_start, the non-triple post-pass (below) strips
+                # leading spaces/tabs from the next piece. Either way the
+                # marker is dropped before materialization.
                 flush!()
                 push!(pieces, :continuation_boundary)
                 continue
@@ -670,8 +673,35 @@ function _string_children!(r::Translator.Node, kids::Vector{Translator.Node};
     end
     flush!()
 
+    # `\<newline>` continuation consumes all leading whitespace on the
+    # continuation line (both triple and single-quoted). Strip leading
+    # spaces/tabs from any piece immediately following a boundary marker.
+    # The marker itself stays in `pieces` for now — triple's indent-strip
+    # uses it to reset at_line_start, and both code paths drop it before
+    # materialization.
+    strip_next = false
+    for i in eachindex(pieces)
+        p = pieces[i]
+        if p === :continuation_boundary
+            strip_next = true
+        elseif p isa String && strip_next
+            j = 1
+            while j <= lastindex(p) && (p[j] == ' ' || p[j] == '\t')
+                j = nextind(p, j)
+            end
+            pieces[i] = j == 1 ? p : String(SubString(p, j))
+            strip_next = false
+        else
+            strip_next = false
+        end
+    end
+
     if triple
         pieces = _split_triple(pieces)
+    else
+        # Drop the (now-consumed) continuation markers and empty pieces.
+        pieces = Any[p for p in pieces
+                     if !(p === :continuation_boundary) && !(p isa String && isempty(p))]
     end
 
     # Materialize pieces to child nodes. Interpolations drain from the
@@ -1124,6 +1154,20 @@ RULES["range_expression"] = function (n)
     # Longer chains (`a:b:c:d`) keep the left-leaning nesting of the first
     # three parts: `((call-i a : b c) : d)`.
     kids = _non_trivia(n.children)
+    # `<unary-op>:<expr>` (e.g. `!:consistent`, `-:x`) is parsed by tree-sitter
+    # as range_expression(bare operator, rhs) because `$.operator` alone is a
+    # valid `_expression`. JuliaSyntax always reads this as unary prefix on a
+    # symbol quote: `(call-pre <op> (quote-: <rhs>))`. A bare operator can never
+    # be a legitimate range LHS in Julia, so the detection is exact.
+    if length(kids) == 2 && kids[1].kind == "operator"
+        op_text = kids[1].text === nothing ? "" : kids[1].text
+        q = Node("quote-:")
+        push!(q.children, translate(kids[2]))
+        r = Node("call-pre")
+        push!(r.children, literal(op_text))
+        push!(r.children, q)
+        return r
+    end
     # tree-sitter: range_expression has either 2 children (binary `a:b`) or
     # 1 nested range_expression + 1 child (representing `a:b:c` as
     # `range(range(a,b),c)`). Detect the nested step-range pattern and flatten.

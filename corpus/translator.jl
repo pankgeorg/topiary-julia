@@ -690,8 +690,13 @@ function _string_children!(r::Translator.Node, kids::Vector{Translator.Node};
     end
 end
 
+"Detect triple-quoted / triple-backticked string via the alias child emitted by tree-sitter-julia."
+function _is_triple_string(n::Node)
+    any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
+end
+
 RULES["string_literal"] = function (n)
-    triple = any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
+    triple = _is_triple_string(n)
     r = Node(triple ? "string-s" : "string")
     _string_children!(r, _non_trivia(n.children); triple=triple)
     # JuliaSyntax always includes at least one text child, even for `""`.
@@ -714,7 +719,7 @@ RULES["prefixed_string_literal"] = function (n)
     # `(var NAME)` with the interior treated as an identifier.
     prefix = _child_by_kind(n, "identifier")
     prefix_name = prefix === nothing ? "?" : (prefix.text === nothing ? "?" : prefix.text)
-    triple = any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
+    triple = _is_triple_string(n)
     if prefix_name == "var"
         r = Node("var")
         # Concatenate all content/escape_sequence text into a single name.
@@ -779,7 +784,7 @@ RULES["prefixed_string_literal"] = function (n)
 end
 
 RULES["command_literal"] = function (n)
-    triple = any(c -> c.kind == "triple_quote" || c.kind == "triple_backtick", n.children)
+    triple = _is_triple_string(n)
     r = Node(triple ? "cmdstring-s-r" : "cmdstring-r")
     # Prefer the `(raw_content "…")` child injected by the Rust side — it
     # preserves interpolation source (`$x`, `$(f(y))`) as literal text,
@@ -941,10 +946,6 @@ end
 # Binary: (call-i a op b). JuliaSyntax uses `||` and `&&` as direct heads,
 # not call-i; detect those operators and emit accordingly.
 const SYNTACTIC_BINOPS = Set(["||", "&&", "->", ":=", "<:", ">:"])
-
-# JuliaSyntax emits these with right-associative nesting: `a || b || c`
-# becomes `(|| a (|| b c))`, not `(|| (|| a b) c)`.
-const RIGHT_ASSOC_BINOPS = Set(["||", "&&", "->"])
 
 # JuliaSyntax renders chains of the same associative operator as a single
 # flat `call-i` with multiple operands: `a + b + c` → `(call-i a + b c)`.
@@ -2321,9 +2322,5 @@ RULES["juxtaposition_expression"] = function (n)
     end
     return r
 end
-
-# Trivia (should normally be stripped by _non_trivia, but included for safety).
-RULES["line_comment"]  = _leaf_rule("line_comment")
-RULES["block_comment"] = _leaf_rule("block_comment")
 
 end # module Translator

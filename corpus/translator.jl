@@ -1581,11 +1581,26 @@ RULES["macro_identifier"] = function (n)
     if length(kids) == 1 && kids[1].kind == "identifier" && kids[1].text !== nothing
         return literal("@" * kids[1].text)
     end
-    # Qualified or operator macro: try to serialize child.
+    # Qualified macro `@Base.assume_effects` → JuliaSyntax moves the `@` onto
+    # the LAST component: `(. Base @assume_effects)`. Walk through nested
+    # field_expression children, translate as usual, then rewrite the rightmost
+    # identifier leaf by prepending `@`.
     inner = translate(kids[1])
-    # Render inner as a string prefixed by '@'.
+    if kids[1].kind == "field_expression"
+        _prepend_at_to_tail!(inner)
+        return inner
+    end
+    # Operator / interpolation macro: fall through to the string form.
     inner_str = sexp_string(inner)
     return literal("@" * inner_str)
+end
+
+function _prepend_at_to_tail!(n::Node)
+    if n.kind == "." && length(n.children) >= 2
+        _prepend_at_to_tail!(n.children[end])
+    elseif n.text !== nothing && !startswith(n.text, "@")
+        n.text = "@" * n.text
+    end
 end
 
 RULES["macro_argument_list"] = function (n)
@@ -1600,17 +1615,24 @@ end
 # Field access: (. value field)
 RULES["field_expression"] = function (n)
     kids = _non_trivia(n.children)
-    r = Node(".")
-    push!(r.children, translate(kids[1]))
-    field = kids[2]
-    if field.kind == "identifier" && field.text !== nothing
-        # JuliaSyntax prints field name as `(quote-: name)` when accessed via `.`.
-        # Actually from our exploration `a.b` → `(. a b)` — field name is bare.
-        push!(r.children, literal(field.text))
-    else
-        push!(r.children, translate(field))
+    # Tree-sitter may surface multi-dot chains as a flat field_expression with
+    # N ≥ 2 children (`a.b.c` → [a, b, c]). JuliaSyntax emits left-nested
+    # `(. (. a b) c)`. Build the tree accordingly.
+    function _wrap_field(base::Node, field::Node)
+        r = Node(".")
+        push!(r.children, base)
+        if field.kind == "identifier" && field.text !== nothing
+            push!(r.children, literal(field.text))
+        else
+            push!(r.children, translate(field))
+        end
+        return r
     end
-    return r
+    acc = translate(kids[1])
+    for i in 2:length(kids)
+        acc = _wrap_field(acc, kids[i])
+    end
+    return acc
 end
 
 # Indexing: (ref a args...)

@@ -259,10 +259,31 @@ function _is_docstring_source(c::Node)
     c.kind == "string_literal" || c.kind == "prefixed_string_literal"
 end
 
+"Whether `n` is a `@doc` macrocall (plain `@doc` head) that looks like a
+docstring introducer — e.g. `@doc raw\"\"\"...\"\"\"`. Matches only the
+unparenthesized form with ≥ 1 arg; the parenthesized `@doc(str, tgt)` is
+already a complete 2-arg macrocall in tree-sitter and needs no absorption."
+function _is_at_doc_head(n::Node)
+    n.kind == "macrocall_expression" || return false
+    kids = _non_trivia(n.children)
+    length(kids) >= 2 || return false
+    kids[2].kind == "macro_argument_list" || return false
+    mi = kids[1]
+    mi.kind == "macro_identifier" || return false
+    mikids = _non_trivia(mi.children)
+    length(mikids) == 1 && mikids[1].kind == "identifier" &&
+        mikids[1].text !== nothing && mikids[1].text == "doc"
+end
+
 "Rewrite consecutive `(docstring, expression)` pairs into `(doc docstring expression)`.
 JuliaSyntax only wraps when the string is immediately followed by an expression —
 a blank line between them (detected via the Rust-side `(blank_after)` marker)
-leaves the string standalone."
+leaves the string standalone.
+
+Also handles `@doc <str>` followed by a target: Julia binds the next
+expression as an additional macro argument, so `@doc \"s\" \\n foo` parses
+as `(macrocall @doc \"s\" foo)`. Tree-sitter emits them as siblings; we
+append the target to the macrocall's args here."
 function _wrap_docstrings(kids::Vector{Node})::Vector{Node}
     out = Node[]
     i = 1
@@ -275,6 +296,15 @@ function _wrap_docstrings(kids::Vector{Node})::Vector{Node}
             push!(doc.children, translate(c))
             push!(doc.children, translate(kids[i+1]))
             push!(out, doc)
+            i += 2
+        elseif _is_at_doc_head(c) && !_has_marker(c, "blank_after") && i < n &&
+               !_is_docstring_source(kids[i+1])
+            mc = translate(c)
+            # Recurse: the absorbed target may itself be a @doc chain or
+            # a docstring binding (e.g. `@doc "a"\n@doc "b"\nfoo`).
+            absorbed = _wrap_docstrings(kids[i+1:i+1])
+            push!(mc.children, only(absorbed))
+            push!(out, mc)
             i += 2
         else
             push!(out, translate(c))

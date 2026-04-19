@@ -79,9 +79,14 @@ fn node_to_sexp(node: &Node, source: &str, out: &mut String) {
         let before = out.len();
         node_to_sexp(child, source, out);
         let child_kind = child.kind();
-        if child_kind == "string_literal" || child_kind == "prefixed_string_literal" {
+        if child_kind == "string_literal"
+            || child_kind == "prefixed_string_literal"
+            || child_kind == "macrocall_expression"
+        {
             // A doc-string's binding to the next expression breaks on
-            // either a blank line OR an intervening comment.
+            // either a blank line OR an intervening comment. Same check
+            // applies to `@doc <str>` form (translator absorbs next
+            // sibling into the macrocall's args; blank-line breaks that).
             let mut next_idx = idx + 1;
             let mut saw_comment = false;
             while let Some(cand) = named_children.get(next_idx) {

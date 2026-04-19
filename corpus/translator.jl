@@ -2289,14 +2289,30 @@ end
 RULES["global_statement"] = function (n)
     r = Node("global")
     for c in _non_trivia(n.children)
-        push!(r.children, translate(c))
+        if c.kind == "open_tuple"
+            # `global a, b` → (global a b), not (global (tuple a b)).
+            # JuliaSyntax flattens the comma-separated list at this boundary;
+            # tree-sitter wraps it in open_tuple. Splice the children through.
+            for gc in _non_trivia(c.children)
+                push!(r.children, translate(gc))
+            end
+        else
+            push!(r.children, translate(c))
+        end
     end
     return r
 end
 RULES["local_statement"] = function (n)
     r = Node("local")
     for c in _non_trivia(n.children)
-        push!(r.children, translate(c))
+        if c.kind == "open_tuple"
+            # See global_statement: JuliaSyntax flattens `local a, b` → (local a b).
+            for gc in _non_trivia(c.children)
+                push!(r.children, translate(gc))
+            end
+        else
+            push!(r.children, translate(c))
+        end
     end
     return r
 end

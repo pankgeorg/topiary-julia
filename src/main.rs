@@ -5,6 +5,7 @@ use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
 use topiary_core::{formatter, Language, Operation, TopiaryQuery};
+use topiary_julia::sexp;
 use topiary_tree_sitter_facade::Language as Grammar;
 
 mod parse;
@@ -79,12 +80,16 @@ fn run_parse() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let sexp = parse::tree_to_sexp(&input);
-    let has_errors = parse::source_has_errors(&input);
+    let Some(tree) = sexp::parse_julia(&input) else {
+        eprintln!("Failed to parse input");
+        return ExitCode::from(2);
+    };
+    let sexp_text = parse::tree_to_sexp(&tree, &input);
+    let has_errors = sexp::tree_has_errors(&tree);
 
     let stdout = io::stdout();
     let mut handle = BufWriter::new(stdout.lock());
-    let _ = writeln!(handle, "{sexp}");
+    let _ = writeln!(handle, "{sexp_text}");
 
     if has_errors {
         ExitCode::from(2)

@@ -5,6 +5,7 @@
 #![allow(dead_code)]
 
 use topiary_core::{formatter, Language, Operation, TopiaryQuery};
+use topiary_julia::sexp;
 use topiary_tree_sitter_facade::{Language as Grammar, Node, Parser};
 
 const QUERY: &str = include_str!("../../julia.scm");
@@ -110,28 +111,7 @@ fn node_to_sexp(node: &Node, source: &str) -> String {
 
 /// Check if tree-sitter parse tree contains any ERROR nodes.
 pub fn source_has_errors(code: &str) -> bool {
-    let grammar: Grammar = tree_sitter_julia::LANGUAGE.into();
-    let mut parser = Parser::new().unwrap();
-    parser.set_language(&grammar).unwrap();
-    let tree = parser.parse(code, None).unwrap();
-    match tree {
-        Some(t) => has_error(&t.root_node()),
-        None => true,
-    }
-}
-
-fn has_error(node: &Node) -> bool {
-    if node.kind() == "ERROR" || node.is_error() || node.is_missing() {
-        return true;
-    }
-    for i in 0..node.child_count() {
-        if let Some(child) = node.child(i) {
-            if has_error(&child) {
-                return true;
-            }
-        }
-    }
-    false
+    sexp::source_has_errors(code)
 }
 
 // ─── Corpus extraction ──────────────────────────────────────────

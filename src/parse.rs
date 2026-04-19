@@ -180,5 +180,28 @@ fn node_to_sexp(node: &Node, source: &str, out: &mut String) {
         }
     }
 
+    // `open_tuple` with trailing comma — the comma is an anonymous token the
+    // grammar doesn't expose as `trailing_comma`. Surface it so the translator
+    // can detect multi-line tuple continuation (`f, u0,\n p = ...`) and merge
+    // the trailing assignment LHS back into the tuple.
+    if kind == "open_tuple" {
+        let mut has_trailing = false;
+        for i in (0..node.child_count()).rev() {
+            if let Some(child) = node.child(i) {
+                let ctext = &source[child.start_byte() as usize..child.end_byte() as usize];
+                if !child.is_named() && ctext == "," {
+                    has_trailing = true;
+                    break;
+                }
+                if child.is_named() {
+                    break;
+                }
+            }
+        }
+        if has_trailing {
+            out.push_str(" (trailing_comma)");
+        }
+    }
+
     out.push(')');
 }

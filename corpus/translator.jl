@@ -275,6 +275,51 @@ function _is_at_doc_head(n::Node)
         mikids[1].text !== nothing && mikids[1].text == "doc"
 end
 
+"Merge a trailing-comma `open_tuple` with the assignment (or open_tuple) on
+the next line. Tree-sitter emits `f, u0,\\n p = x(y)` as two siblings
+because the newline terminates the first statement, but Julia parses it as
+`(f, u0, p) = x(y)`. The Rust side flags trailing-comma open_tuples with
+a `(trailing_comma)` marker."
+function _merge_open_tuple_continuation!(kids::Vector{Node}, i::Int)
+    c = kids[i]
+    c.kind == "open_tuple" && _has_marker(c, "trailing_comma") || return nothing
+    i < length(kids) || return nothing
+    nxt = kids[i+1]
+    if nxt.kind == "assignment"
+        # Append the assignment LHS onto the open_tuple, then retranslate
+        # assignment with the merged LHS. Assignment children: (lhs op rhs …).
+        asgn_kids = _non_trivia(nxt.children)
+        length(asgn_kids) >= 3 || return nothing
+        merged_tuple = Node("open_tuple")
+        for gc in _non_trivia(c.children)
+            push!(merged_tuple.children, gc)
+        end
+        push!(merged_tuple.children, asgn_kids[1])
+        # Build a synthetic assignment node reusing the original's op + rhs.
+        synth = Node("assignment")
+        push!(synth.children, merged_tuple)
+        for k in 2:length(asgn_kids)
+            push!(synth.children, asgn_kids[k])
+        end
+        return translate(synth)
+    elseif nxt.kind == "open_tuple"
+        # `@_public a,\n b,\n c` chain — extend the first open_tuple with
+        # subsequent ones (and possibly a final bare identifier).
+        merged = Node("open_tuple")
+        for gc in _non_trivia(c.children)
+            push!(merged.children, gc)
+        end
+        for gc in _non_trivia(nxt.children)
+            push!(merged.children, gc)
+        end
+        if _has_marker(nxt, "trailing_comma")
+            push!(merged.children, Node("trailing_comma"))
+        end
+        return merged  # return the node, caller re-enters loop with this result
+    end
+    nothing
+end
+
 "Rewrite consecutive `(docstring, expression)` pairs into `(doc docstring expression)`.
 JuliaSyntax only wraps when the string is immediately followed by an expression —
 a blank line between them (detected via the Rust-side `(blank_after)` marker)
@@ -285,12 +330,61 @@ expression as an additional macro argument, so `@doc \"s\" \\n foo` parses
 as `(macrocall @doc \"s\" foo)`. Tree-sitter emits them as siblings; we
 append the target to the macrocall's args here."
 function _wrap_docstrings(kids::Vector{Node})::Vector{Node}
+    # First pass: merge trailing-comma open_tuple chains so the remaining
+    # loop only sees fully-reassembled tuples.
+    merged_kids = Node[]
+    i = 1
+    n = length(kids)
+    while i <= n
+        c = kids[i]
+        if c.kind == "open_tuple" && _has_marker(c, "trailing_comma") && i < n
+            # Chain together as many consecutive open_tuples as possible, then
+            # — only if the last chain-step had a trailing comma AND the next
+            # kid is a bare expression (not assignment; assignment is handled
+            # by `_merge_open_tuple_continuation!`) — absorb that expression
+            # as the tuple's final element.
+            combined = deepcopy(c)
+            j = i + 1
+            last_had_trailing = true
+            while j <= n && kids[j].kind == "open_tuple"
+                for gc in _non_trivia(kids[j].children)
+                    push!(combined.children, gc)
+                end
+                last_had_trailing = _has_marker(kids[j], "trailing_comma")
+                j += 1
+                last_had_trailing || break
+            end
+            if last_had_trailing && j <= n && kids[j].kind != "assignment" &&
+               kids[j].kind != "open_tuple"
+                push!(combined.children, kids[j])
+                last_had_trailing = false  # absorbed a non-tuple final element
+                j += 1
+            end
+            # Keep the trailing_comma marker iff the final open_tuple in the
+            # chain also had one — so the next pass can still merge with a
+            # following assignment (`a, b,\n c,\n d = foo()`).
+            if !last_had_trailing
+                combined.children = [ch for ch in combined.children if ch.kind != "trailing_comma"]
+            end
+            push!(merged_kids, combined)
+            i = j
+        else
+            push!(merged_kids, c)
+            i += 1
+        end
+    end
+    kids = merged_kids
+
     out = Node[]
     i = 1
     n = length(kids)
     while i <= n
         c = kids[i]
-        if _is_docstring_source(c) && !_has_marker(c, "blank_after") &&
+        merged = _merge_open_tuple_continuation!(kids, i)
+        if merged !== nothing
+            push!(out, merged)
+            i += 2
+        elseif _is_docstring_source(c) && !_has_marker(c, "blank_after") &&
            i < n && !_is_docstring_source(kids[i+1])
             doc = Node("doc")
             push!(doc.children, translate(c))

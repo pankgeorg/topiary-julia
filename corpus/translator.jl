@@ -1110,7 +1110,7 @@ const FLAT_BINOPS = Set(["+", "*", "++"])
 # Chained comparisons (even with mixed operators) collapse into a single
 # `(comparison …)` node: `a < b ≤ c` → `(comparison a < b ≤ c)`.
 const COMPARISON_OPS = Set([
-    "<", ">", "<=", ">=", "≤", "≥", "==", "===", "!==",
+    "<", ">", "<=", ">=", "≤", "≥", "==", "!=", "≠", "===", "!==",
     "⊆", "⊇", "⊂", "⊃", "⊊", "⊋", "∈", "∉", "∋", "∌", "∼", "≈", "≉",
     "≃", "≄", "≅", "≇", "≡", "≢", "≟",
 ])

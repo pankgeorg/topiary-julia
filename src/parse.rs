@@ -106,18 +106,34 @@ fn node_to_sexp(node: &Node, source: &str, out: &mut String) {
     }
 
     // Signed-literal fold: `-1`, `+1.5` (unary op + numeric literal with NO
-    // intervening whitespace) become a single literal in JuliaSyntax.
+    // intervening whitespace) become a single literal in JuliaSyntax. Also
+    // fires for `-3s`, `-2(x+1)` etc. where the operand is a juxtaposition
+    // whose first child is a numeric literal — JuliaSyntax folds the sign
+    // into the juxtaposition's head: `(juxtapose -3 s)`, not
+    // `(call-pre - (juxtapose 3 s))`.
     if kind == "unary_expression" && named_children.len() == 2 {
         let op = &named_children[0];
-        let lit = &named_children[1];
-        if op.kind() == "operator"
-            && (lit.kind() == "integer_literal" || lit.kind() == "float_literal")
-        {
+        let child = &named_children[1];
+        if op.kind() == "operator" {
             let op_text = &source[op.start_byte() as usize..op.end_byte() as usize];
-            if (op_text == "-" || op_text == "+")
-                && lit.start_byte() as usize == op.end_byte() as usize
-            {
-                out.push_str(" (fold_sign)");
+            if op_text == "-" || op_text == "+" {
+                let fold_head: Option<Node> = match child.kind().as_ref() {
+                    "integer_literal" | "float_literal" => Some(child.clone()),
+                    "juxtaposition_expression" => {
+                        let first_named = (0..child.child_count()).find_map(|i| {
+                            child.child(i).filter(|c| c.is_named())
+                        });
+                        first_named.filter(|fc| {
+                            matches!(fc.kind().as_ref(), "integer_literal" | "float_literal")
+                        })
+                    }
+                    _ => None,
+                };
+                if let Some(head) = fold_head {
+                    if head.start_byte() as usize == op.end_byte() as usize {
+                        out.push_str(" (fold_sign)");
+                    }
+                }
             }
         }
     }

@@ -1118,12 +1118,24 @@ RULES["unary_expression"] = function (n)
     op_text = op_node.text === nothing ? "?" : op_node.text
     # Rust side injects `(fold_sign)` when `-<int>` / `+<int>` / etc. appears
     # with no whitespace. JuliaSyntax parses those as signed numeric literals
-    # rather than `call-pre - ...`.
+    # rather than `call-pre - ...`. The marker also fires when the operand is
+    # a juxtaposition whose first child is a literal (`-3s` → `(juxtapose -3 s)`).
     if _has_marker(n, "fold_sign") && length(kids) == 2
-        lit = kids[2]
-        if lit.kind in ("integer_literal", "float_literal")
-            txt = lit.text === nothing ? "" : lit.text
+        child = kids[2]
+        if child.kind in ("integer_literal", "float_literal")
+            txt = child.text === nothing ? "" : child.text
             return literal(_normalize_numeric(op_text * txt))
+        elseif child.kind == "juxtaposition_expression"
+            jkids = _non_trivia(child.children)
+            if !isempty(jkids) && jkids[1].kind in ("integer_literal", "float_literal")
+                head_txt = jkids[1].text === nothing ? "" : jkids[1].text
+                r = Node("juxtapose")
+                push!(r.children, literal(_normalize_numeric(op_text * head_txt)))
+                for gc in jkids[2:end]
+                    push!(r.children, translate(gc))
+                end
+                return r
+            end
         end
     end
     operand = translate(kids[2])

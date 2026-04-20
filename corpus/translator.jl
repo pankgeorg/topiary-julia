@@ -2145,30 +2145,95 @@ function _insert_as_lhs(new_lhs::Node, node::Node)::Node
     return r
 end
 
+const FOR_BINDING_OPS = Set(["in", "=", "∈"])
+
+"Try to reinterpret `n` as a for_binding. Returns a new synthesized
+for_binding node, or `nothing` if the shape doesn't match. Used to
+reconstruct the 2nd+ bindings in `for i in 1 : 10, j in 1 : 5` where
+tree-sitter has lost them into the loop body."
+function _as_synth_for_binding(n::Node)::Union{Nothing,Node}
+    if n.kind == "binary_expression"
+        kids = _non_trivia(n.children)
+        length(kids) == 3 || return nothing
+        kids[2].kind == "operator" || return nothing
+        op_text = kids[2].text === nothing ? "" : kids[2].text
+        op_text in FOR_BINDING_OPS || return nothing
+        r = Node("for_binding")
+        push!(r.children, kids[1])
+        push!(r.children, kids[2])
+        push!(r.children, kids[3])
+        return r
+    elseif n.kind == "range_expression"
+        # `(j in 1) : END` — tree-sitter shape for `j in 1 : END`.
+        rkids = _non_trivia(n.children)
+        local L, R
+        if length(rkids) == 2
+            L, R = rkids[1], rkids[2]
+        elseif length(rkids) == 3 && rkids[2].kind == "operator"
+            L, R = rkids[1], rkids[3]
+        else
+            return nothing
+        end
+        L.kind == "binary_expression" || return nothing
+        lkids = _non_trivia(L.children)
+        length(lkids) == 3 || return nothing
+        lkids[2].kind == "operator" || return nothing
+        op_text = lkids[2].text === nothing ? "" : lkids[2].text
+        op_text in FOR_BINDING_OPS || return nothing
+        # for_binding's iter becomes range(lkids[3], :, R), left-nested if R is
+        # itself a range_expression.
+        iter = _insert_as_lhs(lkids[3], R)
+        r = Node("for_binding")
+        push!(r.children, lkids[1])
+        push!(r.children, lkids[2])
+        push!(r.children, iter)
+        return r
+    end
+    return nothing
+end
+
 "Detect and fix the `for i in 1 : n`-style misparse. Tree-sitter breaks the
 for_binding at `1` and leaves `:n` as the first statement of the loop body.
 If the loop body's first statement begins with a `quote_expression` at its
 leftmost leaf, fold that statement back into the for_binding as the RHS of
-a range_expression anchored at the original iter.
+a range_expression anchored at the original iter. Handles single- and
+multi-binding forms; returns extra for_bindings synthesized from the body
+for the caller to splice into the for_statement's children.
 
 Handles:
-    for i in 1 : n end          (binary range)
-    for i in a : b : c end      (step range — body stmt is range starting with quote)
-    for i in 1 : 2 : 3 : 4 end  (longer chain — recursed left-insert)
-    for i in f(x) : g(y) end    (complex operands — quote becomes call head)
-    for i in 1 : n body end     (body follows — peel off first stmt only)
+    for i in 1 : n end                (binary range)
+    for i in a : b : c end            (step range)
+    for i in 1 : 2 : 3 : 4 end        (longer chain — recursed left-insert)
+    for i in f(x) : g(y) end          (complex operands)
+    for i in 1 : n body end           (body follows — peel off first stmt only)
+    for i in 1 : 10, j in 1 : 5 end   (multi-binding — peel open_tuple)
 "
-function _fix_for_binding_range!(for_binding::Node, block::Node)
+function _fix_for_binding_range!(for_binding::Node, block::Node)::Vector{Node}
+    extras = Node[]
     for_kids = _non_trivia(for_binding.children)
-    isempty(for_kids) && return
+    isempty(for_kids) && return extras
     iter = for_kids[end]
-    iter.kind == "range_expression" && return
+    iter.kind == "range_expression" && return extras
     block_kids_all = _non_trivia(block.children)
-    isempty(block_kids_all) && return
+    isempty(block_kids_all) && return extras
     first_stmt = block_kids_all[1]
-    _has_leading_quote(first_stmt) || return
+    _has_leading_quote(first_stmt) || return extras
     _unwrap_leading_quote!(first_stmt)
-    new_iter = _insert_as_lhs(iter, first_stmt)
+    # Multi-binding: `first_stmt` is an open_tuple. Its first element is the
+    # range end for this for_binding; each subsequent element reinterprets as
+    # its own for_binding.
+    range_end = first_stmt
+    if first_stmt.kind == "open_tuple"
+        tkids = _non_trivia(first_stmt.children)
+        if !isempty(tkids)
+            range_end = tkids[1]
+            for k in tkids[2:end]
+                synth = _as_synth_for_binding(k)
+                synth !== nothing && push!(extras, synth)
+            end
+        end
+    end
+    new_iter = _insert_as_lhs(iter, range_end)
     # Replace in for_binding.children (preserving surrounding trivia/markers).
     for (i, c) in enumerate(for_binding.children)
         if c === iter
@@ -2183,6 +2248,7 @@ function _fix_for_binding_range!(for_binding::Node, block::Node)
             break
         end
     end
+    return extras
 end
 
 function _has_leading_quote(n::Node)::Bool
@@ -2197,7 +2263,6 @@ end
 
 RULES["for_statement"] = function (n)
     kids = _non_trivia(n.children)
-    # Find the block; apply the range-fixup pass once per for_binding.
     block_node = nothing
     for c in kids
         if c.kind == "block"
@@ -2205,10 +2270,11 @@ RULES["for_statement"] = function (n)
             break
         end
     end
+    extra_bindings = Node[]
     if block_node !== nothing
         for c in kids
             c.kind == "for_binding" || continue
-            _fix_for_binding_range!(c, block_node)
+            append!(extra_bindings, _fix_for_binding_range!(c, block_node))
         end
     end
     r = Node("for")
@@ -2222,6 +2288,9 @@ RULES["for_statement"] = function (n)
                 push!(body.children, translate(b))
             end
         end
+    end
+    for synth in extra_bindings
+        push!(iter.children, translate(synth))
     end
     push!(r.children, iter)
     push!(r.children, body)

@@ -87,7 +87,12 @@ function bisect!(findings::Vector{Finding}, bin, node, file_code, origin)
     # extend past EOF when `ignore_errors=true`. Skip those — a zero-
     # width or out-of-bounds slice isn't a meaningful minimization target.
     (isempty(r) || last(r) > ncodeunits(file_code)) && return
-    snippet = file_code[r]
+    # Slice by raw bytes — JuliaSyntax can emit ranges that don't align
+    # with char boundaries around multi-byte UTF-8 (e.g. at the edge of
+    # a trivia token). String(::Vector{UInt8}) tolerates malformed UTF-8
+    # by keeping the bytes as-is; tree-sitter will then either parse or
+    # reject them, both of which are fine.
+    snippet = String(codeunits(file_code)[r])
     # Empty/whitespace-only snippet can't be a useful finding.
     isempty(strip(snippet)) && return
 
@@ -133,6 +138,16 @@ end
 # ─── Input collection ──────────────────────────────────────────────
 
 """
+Strip the user's `\$HOME` from a path, returning e.g.
+`~/.julia/packages/Pluto/abcd/src/foo.jl`. Keeps the TOML and report
+portable across machines with different usernames.
+"""
+function normalize_origin(path::AbstractString)
+    home = homedir()
+    startswith(path, home) ? "~" * path[nextind(path, lastindex(home)):end] : path
+end
+
+"""
     collect_fixtures(dir) -> Vector{Tuple{origin, code}}
 """
 function collect_fixtures(dir)
@@ -150,14 +165,27 @@ function collect_fixtures(dir)
     out
 end
 
+"""
+Read `corpus.json` (as written by build_corpus.jl) and return
+(origin, code) pairs for every file listed. The corpus is a
+`families` dict of arrays; we flatten across families and dedupe
+paths (a single package can be reachable from multiple family
+roots).
+"""
 function collect_from_corpus_json(path)
     isfile(path) || error("--corpus: file not found: $path")
     data = JSON.parsefile(path)
+    haskey(data, "families") || error("--corpus: no `families` key in $path")
     out = Tuple{String,String}[]
-    for entry in data
-        file_path = entry["path"]
-        isfile(file_path) || continue
-        push!(out, (file_path, read(file_path, String)))
+    seen = Set{String}()
+    for (_family, entries) in data["families"]
+        for entry in entries
+            file_path = entry["path"]
+            (file_path in seen) && continue
+            push!(seen, file_path)
+            isfile(file_path) || continue
+            push!(out, (normalize_origin(file_path), read(file_path, String)))
+        end
     end
     out
 end
@@ -288,7 +316,8 @@ function parse_args()
             args[:corpus] = ARGS[i+1]
             i += 2
         elseif arg == "--limit"
-            args[:limit] = parse(Int, ARGS[i+1])
+            # Base.parse — `using JuliaSyntax` shadows the unqualified name.
+            args[:limit] = Base.parse(Int, ARGS[i+1])
             i += 2
         elseif arg == "--bin"
             args[:bin] = ARGS[i+1]

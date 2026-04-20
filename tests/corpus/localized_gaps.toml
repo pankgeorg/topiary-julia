@@ -13,18 +13,474 @@ js_sexp = "@$"
 code = "$"
 origin = "corpus/fixtures/parse_errors.jl:20"
 [[snippet]]
+js_sexp = "'"
+code = "'"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2443"
+[[snippet]]
+js_sexp = "."
+code = "."
+origin = "~/.julia/packages/Reexport/OxbHO/src/Reexport.jl:26"
+[[snippet]]
+js_sexp = "⋅"
+code = "·"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:837"
+[[snippet]]
+js_sexp = "($ 🏡)"
+code = "$🏡"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/exceptions.jl:378"
+[[snippet]]
+js_sexp = "(& x)"
+code = "&x"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1733"
+[[snippet]]
+js_sexp = "+̂"
+code = "+̂"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1074"
+[[snippet]]
+js_sexp = "+̂′"
+code = "+̂′"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1075"
+[[snippet]]
+js_sexp = "(quote-: +ꜝ)"
+code = ":+ꜝ"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2509"
+[[snippet]]
+js_sexp = "(quote-: (macrocall @m))"
+code = ":@m"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:241"
+[[snippet]]
+js_sexp = "+⁽¹⁾"
+code = "+⁽¹⁾"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1076"
+[[snippet]]
+js_sexp = "(≔ 1 2)"
+code = "1 ≔ 2"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:244"
+[[snippet]]
+js_sexp = "(≕ 1 2)"
+code = "1 ≕ 2"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:246"
+[[snippet]]
+js_sexp = "(⩴ 1 2)"
+code = "1 ⩴ 2"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:245"
+[[snippet]]
+js_sexp = "(quote-: (macrocall @mac))"
+code = ":@mac"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:189"
+[[snippet]]
+js_sexp = "(. a (vect 1))"
+code = "a.[1]"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:946"
+[[snippet]]
+js_sexp = "(. a (braces 1))"
+code = "a.{1}"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:947"
+[[snippet]]
+js_sexp = "1.0"
+code = "0x1.P0"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1922"
+[[snippet]]
+js_sexp = "2.0"
+code = "0x1.P1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1923"
+[[snippet]]
+js_sexp = "15.0"
+code = "0xf.P0"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1924"
+[[snippet]]
+js_sexp = "30.0"
+code = "0xf.P1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1925"
+[[snippet]]
+js_sexp = "(:= 1 2)"
+code = "1 := 2"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:243"
+[[snippet]]
+js_sexp = "(call-i a +ꜝ b)"
+code = "a +ꜝ b"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2509"
+[[snippet]]
+js_sexp = "(curly * 1 2)"
+code = "*{1, 2}"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:627"
+[[snippet]]
+js_sexp = "(curly * 1 x)"
+code = "*{1, x}"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:628"
+[[snippet]]
+js_sexp = "1.9375"
+code = "0x1.fP0"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1930"
+[[snippet]]
+js_sexp = "3.875"
+code = "0x1.fP1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1931"
+[[snippet]]
+js_sexp = "15.9375"
+code = "0xf.fP0"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1936"
+[[snippet]]
+js_sexp = "31.875"
+code = "0xf.fP1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1937"
+[[snippet]]
 js_sexp = "(vcat a)"
 code = """[a\n  ;]"""
 origin = "corpus/fixtures/parse_errors.jl:14"
+[[snippet]]
+js_sexp = "(. sin (vect 1))"
+code = "sin.[1]"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1516"
 [[snippet]]
 js_sexp = "(call-i public + 3)"
 code = "public + 3"
 origin = "corpus/fixtures/parse_errors.jl:7"
 [[snippet]]
+js_sexp = "(quote-: (macrocall @mdoc22098))"
+code = ":@mdoc22098"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:1453"
+[[snippet]]
 js_sexp = "(vect (= x 1) (parameters (= y 2)))"
 code = "[x=1, ; y=2]"
 origin = "corpus/fixtures/parse_errors.jl:17"
 [[snippet]]
+js_sexp = "(using (importpath A @foo))"
+code = "using A.@foo"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:522"
+[[snippet]]
+js_sexp = "(quote-: (macrocall @MethodTable))"
+code = ":@MethodTable"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/experimental.jl:458"
+[[snippet]]
+js_sexp = "(call-i (char '\\'') == (ref (string \"'\") 1))"
+code = " ''' == \"'\"[1]"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3521"
+[[snippet]]
+js_sexp = "(quote-: (macrocall (. DocsTest @mac)))"
+code = ":@DocsTest.mac"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:366"
+[[snippet]]
+js_sexp = "(vect (quote-: begin) (quote-: end))"
+code = "[:begin, :end]"
+origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/predefined_formats.jl:127"
+[[snippet]]
+js_sexp = "(op= (::-i (ref x 1) Int) + 1)"
+code = "x[1]::Int += 1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:2464"
+[[snippet]]
+js_sexp = "(quote-: (macrocall @macro_doctest))"
+code = ":@macro_doctest"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:52"
+[[snippet]]
+js_sexp = "(catch exc (block exc))"
+code = "catch exc ; exc"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1516"
+[[snippet]]
+js_sexp = "(importpath Base Foo == bar)"
+code = " Base.Foo.==.bar"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2060"
+[[snippet]]
+js_sexp = "(: (importpath A B) (importpath c @d))"
+code = "import A.B: c.@d"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:521"
+[[snippet]]
+js_sexp = "(= (function g) 1)"
+code = "function g end = 1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1479"
+[[snippet]]
+js_sexp = "(op= (::-i (ref x 1) Float64) + 1)"
+code = "x[1]::Float64 += 1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:2462"
+[[snippet]]
+js_sexp = "(macrocall @test (call-i (call-i 0.1 + 0.1 0.1) ≈ 0.3))"
+code = "@test .1+.1+.1 ≈ .3"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1755"
+[[snippet]]
+js_sexp = "(do (tuple x) (block (macrocall @inline) x))"
+code = " do x @inline; x end"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:286"
+[[snippet]]
+js_sexp = "(macrocall @test (call-i (call-i 0.1 + 0.1 0.1) != 0.3))"
+code = "@test .1+.1+.1 != .3"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1754"
+[[snippet]]
+js_sexp = "(import (importpath Base @__doc__))"
+code = "import Base.@__doc__"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:474"
+[[snippet]]
+js_sexp = "(macrocall @test (call-i (call-i (call-i 0.1 + 0.1 0.1) - 0.3) ≉ 0))"
+code = "@test .1+.1+.1-.3 ≉ 0"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1756"
+[[snippet]]
+js_sexp = "(op= (::-i a (curly Vector Int)) + (vect 1))"
+code = "a::Vector{Int} += [1]"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:1743"
+[[snippet]]
+js_sexp = "(do (tuple x) (block (macrocall @noinline) x))"
+code = " do x @noinline; x end"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:291"
+[[snippet]]
+js_sexp = "(call Expr (quote-: call) (quote-: ~) (quote-: x) 1)"
+code = "Expr(:call, :~, :x, 1)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/JuliaSyntax/test/expr.jl:681"
+[[snippet]]
+js_sexp = "(vect (quote-: begin) (quote-: header) (quote-: end))"
+code = "[:begin, :header, :end]"
+origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/latex/types.jl:77"
+[[snippet]]
+js_sexp = "(call Expr (quote-: call) (quote-: (. ~)) (quote-: x) (quote-: y))"
+code = "Expr(:call, :.~, :x, :y)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2296"
+[[snippet]]
+js_sexp = "(import (importpath Base Math @horner))"
+code = "import Base.Math.@horner"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/complex.jl:372"
+[[snippet]]
+js_sexp = "(: (importpath Base) (importpath Math @horner))"
+code = "using Base: Math.@horner"
+origin = "~/.julia/packages/LogExpFunctions/iNqo2/src/LogExpFunctions.jl:4"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize w)) (call-i w === p))"
+code = "@nospecialize(w) -> w === p"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/show.jl:712"
+[[snippet]]
+js_sexp = "(elseif false (block))"
+code = """elseif false\n        ;\n    """
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:7081"
+[[snippet]]
+js_sexp = "(= bottom_intersection (char '\\''))"
+code = """\n    bottom_intersection = '''"""
+origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/predefined_formats.jl:37"
+[[snippet]]
+js_sexp = "(= bottom_left_corner (char '\\''))"
+code = """\n    bottom_left_corner  = '''"""
+origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/predefined_formats.jl:31"
+[[snippet]]
+js_sexp = "(= bottom_right_corner (char '\\''))"
+code = """\n    bottom_right_corner = '''"""
+origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/predefined_formats.jl:32"
+[[snippet]]
+js_sexp = "(macrocall @assert (call-i (. where uuid) !== nothing))"
+code = "@assert where.uuid !== nothing"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/loading.jl:1085"
+[[snippet]]
+js_sexp = "(primitive 0 SPJa12023)"
+code = "primitive type 0 SPJa12023 end"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3762"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize t)) (call-i t === Bottom))"
+code = "@nospecialize(t) -> t === Bottom"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:1652"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call iscall y x))"
+code = "@nospecialize(x) -> iscall(y, x)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irutils.jl:23"
+[[snippet]]
+js_sexp = "(import (importpath . . ($ old_workspace_name)))"
+code = "import ..($(old_workspace_name))"
+origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:43"
+[[snippet]]
+js_sexp = "(.= (let (block) (block (op= execs + 1) array)) 4)"
+code = "let; execs += 1; array; end .= 4"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3630"
+[[snippet]]
+js_sexp = "(op= chars - (= d (call ndigits (call-i len - chars))))"
+code = "chars -= d = ndigits(len - chars)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/strings/io.jl:226"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize a)) (. (::-i a Const) val))"
+code = "@nospecialize(a) -> (a::Const).val"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/tfuncs.jl:2682"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call isinvoke y x))"
+code = "@nospecialize(x) -> isinvoke(y, x)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irutils.jl:37"
+[[snippet]]
+js_sexp = "(macrocall @test (call-i (call-i (call-i 0.1 + 0.1 0.1) - 0.3) ≈ 0) (= atol (call eps 0.3)))"
+code = "@test .1+.1+.1-.3 ≈ 0 atol=eps(.3)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1757"
+[[snippet]]
 js_sexp = "(let (block (= x outer)) (error-t i = rhs) (block body))"
 code = """let x = outer i = rhs\n    body\nend"""
 origin = "corpus/fixtures/parse_errors.jl:10"
+[[snippet]]
+js_sexp = "(call Expr (quote-: call) (quote-: (. ~)) (call Expr (quote-: vect) 1 2))"
+code = "Expr(:call, :.~, Expr(:vect, 1, 2))"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2298"
+[[snippet]]
+js_sexp = "(call import! (::-i x BigInt) a b c d e f)"
+code = "import!(x::BigInt, a, b, c, d, e, f)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/gmp.jl:263"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize stmt)) (call-i stmt == invoke_expr))"
+code = "@nospecialize(stmt)->stmt==invoke_expr"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/ssair.jl:696"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call (. Meta isexpr) x (quote-: new)))"
+code = "@nospecialize(x)->Meta.isexpr(x, :new)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irpasses.jl:1075"
+[[snippet]]
+js_sexp = "(.op= (let (block (= x array)) (block (op= execs + 1) x)) + 2)"
+code = "let x = array; execs += 1; x; end .+= 2"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3627"
+[[snippet]]
+js_sexp = "(primitive 4294967312 SPJb12023)"
+code = "primitive type 4294967312 SPJb12023 end"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3763"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call isinvokemodify y x))"
+code = "@nospecialize(x) -> isinvokemodify(y, x)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:1775"
+[[snippet]]
+js_sexp = "(op= (::-i is_interactive Bool) | interactiveinput)"
+code = "is_interactive::Bool |= interactiveinput"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/client.jl:277"
+[[snippet]]
+js_sexp = "(macro (call var x) (block (call esc (call bindingexpr x))))"
+code = """macro var(x)\n    esc(bindingexpr(x))\nend"""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/docs/bindings.jl:31"
+[[snippet]]
+js_sexp = "(primitive -4294967280 SPJc12023)"
+code = "primitive type -4294967280 SPJc12023 end"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3764"
+[[snippet]]
+js_sexp = "(import (importpath . . ($ old_workspace_name) ($ symbol)))"
+code = "import ..($(old_workspace_name)).$(symbol)"
+origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:86"
+[[snippet]]
+js_sexp = "(call-i (char '\\xc0\\x80') == (call reinterpret Char 0xc0800000))"
+code = " '\\xc0\\x80' == reinterpret(Char, 0xc0800000)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3503"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call valid_as_lattice x true))"
+code = "@nospecialize(x) -> valid_as_lattice(x, true)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:1456"
+[[snippet]]
+js_sexp = "(.= (::-i (let (block) (block (op= execs + 1) array)) (curly Vector Int)) 7)"
+code = "let; execs += 1; array; end::Vector{Int} .= 7"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3636"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize stmt)) (call (. Meta isexpr) stmt (quote-: invoke)))"
+code = "@nospecialize(stmt)->Meta.isexpr(stmt, :invoke)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/ssair.jl:623"
+[[snippet]]
+js_sexp = "(generator (macrocall @inbounds (call iszero (ref (. a bits) i))) (iteration (in i (call-i 1 : (call min n i)))))"
+code = "@inbounds iszero(a.bits[i]) for i in 1:min(n, i)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitset.jl:416"
+[[snippet]]
+js_sexp = "(generator (macrocall @inbounds (call iszero (ref (. a bits) i))) (iteration (in i (call-i (call max 1 (call-i j + 1)) : n))))"
+code = "@inbounds iszero(a.bits[i]) for i in max(1, j+1):n"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitset.jl:418"
+[[snippet]]
+js_sexp = "(.op= (::-i (let (block (= x array)) (block (op= execs + 1) x)) (curly Vector Int)) + 2)"
+code = "let x = array; execs += 1; x; end::Vector{Int} .+= 2"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3633"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize a)) (? (call isvarargtype a) a (call widenconst a)))"
+code = "@nospecialize(a) -> isvarargtype(a) ? a : widenconst(a)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/typeutils.jl:51"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call valid_as_lattice (call unwrapva x) true))"
+code = "@nospecialize(x) -> valid_as_lattice(unwrapva(x), true)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:523"
+[[snippet]]
+js_sexp = "(generator (macrocall @inbounds (call-i (ref r (call-i i + 1)) - (ref r i))) (iteration (in i (call-i (call firstindex r) : (call-i (call lastindex r) - 1)))))"
+code = "@inbounds r[i+1] - r[i] for i in firstindex(r):lastindex(r)-1"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/multidimensional.jl:1044"
+[[snippet]]
+js_sexp = "(for (iteration (in (call f) (call-i 1 : 3))) (block (call push! a (call f)) (call push! fs f)))"
+code = """for f() in 1:3\n        push!(a, f())\n        push!(fs, f)\n    end"""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:725"
+[[snippet]]
+js_sexp = "(.op= (::-i (macrocall-p @view (ref (call reshape x 2 2) (vect begin) (vect begin end))) (curly AbstractMatrix Int)) + (vect 2))"
+code = "@view(reshape(x,2,2)[[begin],[begin,end]])::AbstractMatrix{Int} .+= [2]"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/subarray.jl:656"
+[[snippet]]
+js_sexp = "(generator (macrocall @inbounds (call f (ref (. a bits) i) (ref (. b bits) (call-i i - shift)))) (iteration (in i (call-i (call max 1 (call-i i + 1)) : (call min n j)))))"
+code = "@inbounds f(a.bits[i], b.bits[i - shift]) for i in max(1, i+1):min(n, j)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitset.jl:417"
+[[snippet]]
+js_sexp = "(.op= (::-i (macrocall-p @views (ref (call reshape x 2 2) (vect begin) (vect begin end))) (curly AbstractMatrix Int)) + (vect 2))"
+code = "@views(reshape(x,2,2)[[begin],[begin,end]])::AbstractMatrix{Int} .+= [2]"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/subarray.jl:674"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize t)) (|| (call-pre ! (call isa t DataType)) (|| (call-pre ! (<: t Tuple)) (call-pre ! (call isknownlength t)))))"
+code = "@nospecialize(t) -> !isa(t, DataType) || !(t <: Tuple) || !isknownlength(t)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:1463"
+[[snippet]]
+js_sexp = "(catch ex (block (call (. GC gc)) (call catch_backtrace) (= caught true)))"
+code = """catch ex\n        GC.gc()\n        catch_backtrace()\n        caught = true\n    """
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/exceptions.jl:379"
+[[snippet]]
+js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (&& (call (. Meta isexpr) x (quote-: foreigncall)) (call-i (ref (. x args) 1) == (quote-: (quote-: some_ccall)))))"
+code = "@nospecialize(x) -> Meta.isexpr(x, :foreigncall) && x.args[1] == :(:some_ccall)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irpasses.jl:1076"
+[[snippet]]
+js_sexp = "(for (iteration (in i (call-i (call length Bc) : -1 2))) (block (= (ref Bc i) (call-i (call-i (ref Bc i) << 1) | (call-i (ref Bc (call-i i - 1)) >>> 63)))))"
+code = """for i = length(Bc) : -1 : 2\n        Bc[i] = (Bc[i] << 1) | (Bc[i-1] >>> 63)\n    end"""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitarray.jl:861"
+[[snippet]]
+js_sexp = "(for (iteration (in t (call-i (call length Bc) : -1 (call-i k + 1)))) (block (= (ref Bc t) (call-i (call-i (ref Bc t) << 1) | (call-i (ref Bc (call-i t - 1)) >>> 63)))))"
+code = """for t = length(Bc) : -1 : k + 1\n        Bc[t] = (Bc[t] << 1) | (Bc[t - 1] >>> 63)\n    end"""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitarray.jl:909"
+[[snippet]]
+js_sexp = "(elseif (call-i (. (. node parent) parent) == nothing) (block) (block (call fix_insert! tree node)))"
+code = """elseif node.parent.parent == nothing\n        ;\n    else\n        fix_insert!(tree, node)\n    """
+origin = "~/.julia/packages/DataStructures/IrAJn/src/red_black_tree.jl:220"
+[[snippet]]
+js_sexp = "(call export! (::-i a (curly AbstractVector T)) (::-i n BigInt) (parameters (= (::-i order Integer) -1) (= (::-i nails Integer) 0) (= (::-i endian Integer) 0)))"
+code = "export!(a::AbstractVector{T}, n::BigInt; order::Integer=-1, nails::Integer=0, endian::Integer=0)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/gmp.jl:250"
+[[snippet]]
+js_sexp = "(export cor cov std stdm var varm mean! mean median! median middle quantile! quantile)"
+code = """export cor, cov, std, stdm, var, varm, mean!, mean,\n    median!, median, middle, quantile!, quantile"""
+origin = "~/.julia/packages/Statistics/gbcbG/src/Statistics.jl:14"
+[[snippet]]
+js_sexp = "(? (call iseven l) (call-i (call-i (call step r) * (call-i l - 1)) * (call-i l >> 1)) (call-i (call-i (call step r) * l) * (call-i (call-i l - 1) >> 1)))"
+code = """iseven(l) ? (step(r) * (l-1)) * (l>>1)\n                                     : (step(r) * l) * ((l-1)>>1)"""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/range.jl:1408"
+[[snippet]]
+js_sexp = "(elseif (call-i mt === (. _TYPE_NAME mt)) (block (call print io (string \" for type constructor\"))) (block (call print io (string \" for callable object\"))))"
+code = """elseif mt === _TYPE_NAME.mt\n        print(io, \" for type constructor\")\n    else\n        print(io, \" for callable object\")\n    """
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/methodshow.jl:281"
+[[snippet]]
+js_sexp = "(? verbose_linetable (call statementidx_lineinfo_printer code) (call inline_linfo_printer code))"
+code = """verbose_linetable ? statementidx_lineinfo_printer(code)\n                                          : inline_linfo_printer(code)"""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/ssair/show.jl:848"
+[[snippet]]
+js_sexp = "(function (call var (::-i v AbstractRange)) (block (= s (call step v)) (= l (call length v)) (= vv (call-i (call-i (call abs2 s) * (call-i l + 1) l) / 12)) (if (|| (call-i l == 0) (call-i l == 1)) (block (return (call (call typeof vv) NaN)))) (return vv)))"
+code = """function var(v::AbstractRange)\n    s  = step(v)\n    l  = length(v)\n    vv = abs2(s) * (l + 1) * l / 12\n    if l == 0 || l == 1\n        return typeof(vv)(NaN)\n    end\n    return vv\nend"""
+origin = "~/.julia/packages/Statistics/gbcbG/src/Statistics.jl:414"
+[[snippet]]
+js_sexp = "(? (&& (call-i (. mt module) === Core) (&& (call-i (. mt defs) isa (. Core TypeMapEntry)) (call-i (. (::-i (. (. mt defs) func) Method) sig) === Tuple))) (string \"builtin function\") (string \"generic function\"))"
+code = """ mt.module === Core && mt.defs isa Core.TypeMapEntry && (mt.defs.func::Method).sig === Tuple ?\n                    \"builtin function\"\n               : # else\n                    \"generic function\""""
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/methodshow.jl:270"
+[[snippet]]
+js_sexp = "(export gctime memory allocs params ratio judge isinvariant isregression isimprovement median mean std var rmskew! rmskew trim)"
+code = """export gctime,\n    memory,\n    allocs,\n    params,\n    ratio,\n    judge,\n    isinvariant,\n    isregression,\n    isimprovement,\n    median,\n    mean,\n    std,\n    var,\n    rmskew!,\n    rmskew,\n    trim"""
+origin = "~/.julia/packages/BenchmarkTools/1i1mY/src/BenchmarkTools.jl:27"
+[[snippet]]
+js_sexp = "(|| (call-i (call get ENV (string \"JULIA_PLUTO_IGNORE_CDN_BUNDLE_WARNING\") (string \"false\")) == (string \"true\")) (macrocall @warn (string \"Could not use bundled CDN version of \" filename \". You should only see this message if you are using a fork of Pluto.\") (= exception (tuple-p e (call catch_backtrace))) (= maxlog 1)))"
+code = "get(ENV, \"JULIA_PLUTO_IGNORE_CDN_BUNDLE_WARNING\", \"false\") == \"true\" || @warn \"Could not use bundled CDN version of $(filename). You should only see this message if you are using a fork of Pluto.\" exception=(e,catch_backtrace()) maxlog=1"
+origin = "~/.julia/packages/Pluto/6smog/src/notebook/Export.jl:39"
+[[snippet]]
+js_sexp = "(catch ex (block (if (call-pre ! (call-i ex isa UndefVarError)) (block (macrocall @warn (string \"Failed to move variable \" symbol \" to new workspace:\")) (call showerror (ref original_stderr) ex (call stacktrace (call catch_backtrace)))))))"
+code = """catch ex\n                    if !(ex isa UndefVarError)\n                        @warn \"Failed to move variable $(symbol) to new workspace:\"\n                        showerror(original_stderr[], ex, stacktrace(catch_backtrace()))\n                    end\n                """
+origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:87"
+[[snippet]]
+js_sexp = "(elseif (&& (call-i (. ex head) === (quote-: import)) (call all (-> (tuple e) (call-i (. e head) === (quote-: .))) (. ex args))) (block (= symbols (typed_comprehension Any (generator (ref (. e args) end) (iteration (in e (. ex args)))))) (return (call Expr (quote-: toplevel) ex (quote-: (call ($ eval) ($ m) (call Expr (quote-: export) (... ($ symbols)))))))) (block (= modules (typed_comprehension Any (generator (ref (. e args) end) (iteration (in e (. ex args))))))))"
+code = """elseif ex.head === :import && all(e -> e.head === :., ex.args)\n        # @reexport import Foo.bar, Baz.qux\n        symbols = Any[e.args[end] for e in ex.args]\n        return Expr(:toplevel, ex, :($eval($m, Expr(:export, $symbols...))))\n    else\n        # @reexport using Foo, Bar, Baz\n        modules = Any[e.args[end] for e in ex.args]\n    """
+origin = "~/.julia/packages/Reexport/OxbHO/src/Reexport.jl:31"
+[[snippet]]
+js_sexp = "(function (where (call var (::-i x (curly Vector T))) (<: T AbstractFloat)) (block (= (tuple mean_val n) (call mean_count x)) (if (call-pre ! (call isnan mean_val)) (block (= sum_square (call zero (call eltype x))) (for (iteration (in i x)) (block (if (call-pre ! (call isnan i)) (block (op= sum_square + (call-i (call-i i - mean_val) ^ 2)))))) (return (call-i sum_square / (call-i n - (call one (call eltype x)))))) (block (return mean_val)))))"
+code = """function var(x::Vector{T}) where T<:AbstractFloat\n    mean_val, n = mean_count(x)\n    if !isnan(mean_val)\n        sum_square = zero(eltype(x))\n        for i in x\n            if !isnan(i)\n                sum_square += (i - mean_val)^2\n            end\n        end\n        return sum_square / (n - one(eltype(x)))\n    else\n        return mean_val # NaN or NaN32\n    end\nend"""
+origin = "~/.julia/packages/NaNMath/zoR8O/src/NaNMath.jl:298"
+[[snippet]]
+js_sexp = "(block (&& (. ctx isreadable) (call throw (call ArgumentError (string \"handshake() already done!\")))) (macrocall @😬 (string \"🤝 ...\")) (while true (block (= n (call ssl_handshake ctx)) (if (call-i n == 0) (block (break)) (elseif (call-i n == MBEDTLS_ERR_SSL_WANT_READ) (block (macrocall @😬 (string \"🤝  ⌛️\")) (if (call eof (. ctx bio)) (block (call throw (call EOFError)) (macrocall @💀 (string \"🤝  🛑\"))))) (block (call ssl_abandon ctx) (macrocall @💀 (string \"🤝  💥\")) (call mbed_ioerr n)))))) (macrocall @😬 (string \"🤝  ✅\")) (= (. ctx isreadable) true) (= (. ctx bytesavailable) 0) (= (. ctx close_notify_sent) false) nothing)"
+code = """\n\n    ctx.isreadable && throw(ArgumentError(\"handshake() already done!\"))\n                                                                                ;@😬 \"🤝 ...\"\n    while true\n        n = ssl_handshake(ctx)\n        if n == 0\n            break\n        elseif n == MBEDTLS_ERR_SSL_WANT_READ                                   ;@😬 \"🤝  ⌛️\"\n            if eof(ctx.bio)\n                throw(EOFError())                                               ;@💀 \"🤝  🛑\"\n            end\n        else\n            ssl_abandon(ctx)                                                    ;@💀 \"🤝  💥\"\n            mbed_ioerr(n)\n        end\n    end\n                                                                                ;@😬 \"🤝  ✅\"\n    ctx.isreadable = true\n    ctx.bytesavailable = 0\n    ctx.close_notify_sent = false\n\n    nothing\n"""
+origin = "~/.julia/packages/MbedTLS/Vaaz8/src/ssl.jl:67"
+[[snippet]]
+js_sexp = "(function (call-, _compute_omitted_columns (::-i ptable ProcessedTable) (::-i display Display) (::-i columns_width (curly Vector Int)) (::-i vlines (curly Union Symbol (curly Vector Int)))) (block (= (tuple ~ num_columns) (call _size ptable)) (= num_additional_columns (call _num_additional_columns ptable)) (= num_rendered_columns (call length columns_width)) (macrocall @inbounds (macrocall @views (if (call-i (ref (. display size) 2) > 0) (block (= available_display_columns (ref (. display size) 2)) (= fully_printed_columns 0) (if (call _check_vline ptable vlines 0) (block (op= available_display_columns - 1))) (for (iteration (in j (call-i 1 : num_rendered_columns))) (block (op= available_display_columns - (call-i (ref columns_width j) + 1)) (&& (call-i available_display_columns < 2) (break)) (if (call-i j > num_additional_columns) (block (op= fully_printed_columns + 1))) (op= available_display_columns - 1) (if (call _check_vline ptable vlines j) (block (op= available_display_columns - 1))))) (= num_omitted_columns (call-i (call-i num_columns - num_additional_columns) - fully_printed_columns))) (block (= num_omitted_columns 0))))) (return num_omitted_columns)))"
+code = """function _compute_omitted_columns(\n    ptable::ProcessedTable,\n    display::Display,\n    columns_width::Vector{Int},\n    vlines::Union{Symbol, Vector{Int}},\n)\n    ~, num_columns         = _size(ptable)\n    num_additional_columns = _num_additional_columns(ptable)\n    num_rendered_columns   = length(columns_width)\n\n    @inbounds @views if display.size[2] > 0\n        available_display_columns = display.size[2]\n\n        fully_printed_columns = 0\n\n        if _check_vline(ptable, vlines, 0)\n            available_display_columns -= 1\n        end\n\n        for j = 1:num_rendered_columns\n            # Take into account the column width plus the padding before the\n            # column.\n            available_display_columns -= columns_width[j] + 1\n\n            available_display_columns < 2 && break\n\n            # We should neglect the additional columns when computing the number\n            # of fully printed columns.\n            if j > num_additional_columns\n                fully_printed_columns += 1\n            end\n\n            # Take into account the column width plus the padding after the\n            # column.\n            available_display_columns -= 1\n\n            # Take into account a vertical line after the columns\n            if _check_vline(ptable, vlines, j)\n                available_display_columns -= 1\n            end\n        end\n\n        num_omitted_columns =\n            (num_columns - num_additional_columns) - fully_printed_columns\n    else\n        num_omitted_columns = 0\n    end\n\n    return num_omitted_columns\nend"""
+origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/misc.jl:148"

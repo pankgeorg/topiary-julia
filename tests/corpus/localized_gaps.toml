@@ -77,22 +77,6 @@ js_sexp = "(. a (braces 1))"
 code = "a.{1}"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:947"
 [[snippet]]
-js_sexp = "1.0"
-code = "0x1.P0"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1922"
-[[snippet]]
-js_sexp = "2.0"
-code = "0x1.P1"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1923"
-[[snippet]]
-js_sexp = "15.0"
-code = "0xf.P0"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1924"
-[[snippet]]
-js_sexp = "30.0"
-code = "0xf.P1"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1925"
-[[snippet]]
 js_sexp = "(:= 1 2)"
 code = "1 := 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:243"
@@ -108,22 +92,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(curly * 1 x)"
 code = "*{1, x}"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:628"
-[[snippet]]
-js_sexp = "1.9375"
-code = "0x1.fP0"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1930"
-[[snippet]]
-js_sexp = "3.875"
-code = "0x1.fP1"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1931"
-[[snippet]]
-js_sexp = "15.9375"
-code = "0xf.fP0"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1936"
-[[snippet]]
-js_sexp = "31.875"
-code = "0xf.fP1"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1937"
 [[snippet]]
 js_sexp = "(vcat a)"
 code = """[a\n  ;]"""

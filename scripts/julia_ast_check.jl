@@ -12,6 +12,9 @@
 
 using Dates
 
+include("_ast_check.jl")
+using .AstCheck
+
 # ─── Configuration ───────────────────────────────────────────────
 
 const FORMATTER = if length(ARGS) >= 1
@@ -25,69 +28,6 @@ end
 
 const JULIA_SHARE = joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia")
 const FOLDERS = ["base", "test"]
-
-# ─── AST comparison helpers ──────────────────────────────────────
-
-"""Flatten :toplevel wrappers when they appear as children of another expression.
-JuliaSyntax wraps `a; b` at top-level into `:toplevel(a, b)` but `a\\nb` becomes
-two separate items. These are semantically equivalent — the formatter may convert
-between them. Flattening makes the comparison robust to this representational
-difference.
-"""
-function flatten_toplevel(args)
-    result = []
-    for a in args
-        if a isa Expr && a.head == :toplevel
-            append!(result, a.args)
-        else
-            push!(result, a)
-        end
-    end
-    return result
-end
-
-"""Strip LineNumberNode from Expr trees so line changes don't cause mismatches.
-Also flattens nested :toplevel wrappers (see flatten_toplevel)."""
-function strip_lines(ex)
-    if ex isa Expr
-        args = filter(a -> !(a isa LineNumberNode), ex.args)
-        args = map(strip_lines, args)
-        # Flatten :toplevel wrappers in positions where they're equivalent to
-        # separate statements. Top-level itself is already :toplevel, so flatten
-        # any nested :toplevel children.
-        if ex.head == :toplevel || ex.head == :block
-            args = flatten_toplevel(args)
-        end
-        return Expr(ex.head, args...)
-    else
-        return ex
-    end
-end
-
-"""Parse a string into a cleaned Expr (no line numbers). Returns nothing on error."""
-function safe_parseall(code::String)
-    try
-        expr = Meta.parseall(code; filename="none")
-        return strip_lines(expr)
-    catch
-        return nothing
-    end
-end
-
-"""Format Julia code via topiary-julia CLI. Returns (formatted_string, success)."""
-function format_code(code::String, formatter::String)
-    try
-        inp = IOBuffer(code)
-        out = IOBuffer()
-        err = IOBuffer()
-        # --skip-idempotence: the idempotence check catches cases where formatting
-        # changes on a second pass, but that's not relevant for AST equivalence.
-        proc = run(pipeline(`$formatter --tolerate-parsing-errors --skip-idempotence`, stdin=inp, stdout=out, stderr=err), wait=true)
-        return (String(take!(out)), proc.exitcode == 0)
-    catch e
-        return ("", false)
-    end
-end
 
 # ─── Categories ──────────────────────────────────────────────────
 
@@ -238,35 +178,6 @@ function run_check()
     end
 
     return results
-end
-
-"""Find first structural difference between two Expr trees."""
-function find_first_diff(a, b, path="toplevel")
-    if typeof(a) != typeof(b)
-        return "$path: type $(typeof(a)) vs $(typeof(b))"
-    end
-    if a isa Expr && b isa Expr
-        if a.head != b.head
-            return "$path: head $(a.head) vs $(b.head)"
-        end
-        for i in 1:max(length(a.args), length(b.args))
-            if i > length(a.args)
-                return "$path.args[$i]: missing in original (extra: $(repr(b.args[i])))"
-            elseif i > length(b.args)
-                return "$path.args[$i]: missing in formatted (was: $(repr(a.args[i])))"
-            else
-                diff = find_first_diff(a.args[i], b.args[i], "$path.args[$i]")
-                if diff !== nothing
-                    return diff
-                end
-            end
-        end
-        return nothing
-    end
-    if a != b
-        return "$path: $(repr(a)) vs $(repr(b))"
-    end
-    return nothing
 end
 
 # ─── Run ─────────────────────────────────────────────────────────

@@ -110,6 +110,28 @@ The TOML is consumed by `build.rs`, which emits one `#[test]` per snippet
 into `$OUT_DIR`. Cargo re-runs the build script when the TOML or any
 corpus file changes.
 
+## Real-world-corpus smoke test (`scripts/smoke-test.sh`)
+
+Runs format + JuliaSyntax AST-equivalence on a stratified random sample
+of the real-world Julia corpus (~180 files, ~15%). Catches regressions
+the per-snippet suites miss. Budget: ≤ 3 min wall.
+
+```bash
+./scripts/smoke-test.sh                                   # replay the current sample
+
+# regenerate the sample (also updates the baseline; run this after a
+# grammar fix lands, so improvements flip to expected_pass = true):
+julia --project=corpus/minimizer scripts/smoke_sample_gen.jl --seed 42 --target 180
+```
+
+Flags:
+- `./scripts/smoke-test.sh --sample <path>` — point at a different sample TOML
+- `--budget <seconds>` — adjust the wall-clock watchdog (default 180)
+
+Exit code 0 ⇔ zero regressions. Improvements and source drifts are
+informational. The sample TOML is `tests/corpus/smoke_sample.toml` and
+is self-baselined (each entry records `expected_pass` + content SHA).
+
 ## Localizing new grammar gaps (`corpus/minimize_gaps.jl`)
 
 When a real Julia file trips tree-sitter-julia, run the minimizer to
@@ -178,6 +200,11 @@ cargo test --test ast_equivalence_test 2>&1 | awk '/Input does not parse cleanly
 | `corpus/minimizer/` | Minimal Julia env for the minimizer (JuliaSyntax + JSON) |
 | `corpus/fixtures/` | User-supplied Julia files to feed the minimizer |
 | `corpus/results/gaps_report.md` | Human-readable output of the minimizer |
+| `scripts/smoke-test.sh` | Wrapper to run the real-world-corpus smoke test |
+| `scripts/smoke_sample_gen.jl` | Stratified random sampler that writes the sample TOML with self-baselined `expected_pass` per file |
+| `scripts/smoke_test.jl` | Replay — flags regressions / improvements / drifts |
+| `scripts/_ast_check.jl` | Shared AstCheck module (strip_lines, safe_parseall, format_code, find_first_diff) |
+| `tests/corpus/smoke_sample.toml` | Committed sample + baseline read by smoke_test |
 
 ## Tree-sitter-julia key files
 

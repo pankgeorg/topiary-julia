@@ -1304,20 +1304,56 @@ RULES["range_expression"] = function (n)
         push!(r.children, q)
         return r
     end
-    # tree-sitter: range_expression has either 2 children (binary `a:b`) or
-    # 1 nested range_expression + 1 child (representing `a:b:c` as
-    # `range(range(a,b),c)`). Detect the nested step-range pattern and flatten.
-    if length(kids) == 2 && kids[1].kind == "range_expression"
-        inner = _non_trivia(kids[1].children)
-        # Only flatten when the inner range is itself binary (non-nested).
-        # `a:b:c` → `(call-i a : b c)`. `a:b:c:d` keeps the inner nested and
-        # adds `:d` on top.
+    # tree-sitter: range_expression has either:
+    #   - 2 children for flush form `a:b`        (operator token is anonymous)
+    #   - 3 children for spaced form `a : b`     (operator is a named child)
+    # A 3-operand `a:b:c` normally nests as `range(range(a,b), c)` (left-
+    # associative); detect that pattern. The for_binding-range fixup below
+    # constructs `range(a, range(b, c))` (right-nested) instead — handle that
+    # too.
+    function _range_pair(r_node)
+        inner = _non_trivia(r_node.children)
+        if length(inner) == 3 && inner[2].kind == "operator"
+            return [inner[1], inner[3]]
+        end
+        return inner
+    end
+    left_nested = nothing
+    left_nested_end = nothing
+    right_nested = nothing
+    right_nested_start = nothing
+    if length(kids) == 2
+        if kids[1].kind == "range_expression"
+            left_nested = kids[1]; left_nested_end = kids[2]
+        elseif kids[2].kind == "range_expression"
+            right_nested = kids[2]; right_nested_start = kids[1]
+        end
+    elseif length(kids) == 3 && kids[2].kind == "operator"
+        if kids[1].kind == "range_expression"
+            left_nested = kids[1]; left_nested_end = kids[3]
+        elseif kids[3].kind == "range_expression"
+            right_nested = kids[3]; right_nested_start = kids[1]
+        end
+    end
+    if left_nested !== nothing
+        inner = _range_pair(left_nested)
         if length(inner) == 2 && inner[1].kind != "range_expression"
             r = Node("call-i")
             push!(r.children, translate(inner[1]))
             push!(r.children, literal(":"))
             push!(r.children, translate(inner[2]))
-            push!(r.children, translate(kids[2]))
+            push!(r.children, translate(left_nested_end))
+            return r
+        end
+    end
+    if right_nested !== nothing
+        inner = _range_pair(right_nested)
+        if length(inner) == 2 && inner[2].kind != "range_expression"
+            r = Node("call-i")
+            push!(r.children, translate(right_nested_start))
+            push!(r.children, literal(":"))
+            push!(r.children, translate(inner[1]))
+            push!(r.children, translate(inner[2]))
             return r
         end
     end
@@ -2049,8 +2085,132 @@ RULES["else_clause"] = function (n)
     return r
 end
 
+"Walk `n`'s leftmost-child chain looking for a `quote_expression`. If found,
+unwrap it in place (the node becomes its inner value). Returns true when a
+quote was unwrapped. Used to fix the `for i in 1 : n` misparse where the
+scanner swallowed `: n` as a quote inside the loop body instead of extending
+the iteration expression into a range."
+function _unwrap_leading_quote!(n::Node)::Bool
+    if n.kind == "quote_expression"
+        kids = _non_trivia(n.children)
+        length(kids) == 1 || return false
+        inner = kids[1]
+        n.kind = inner.kind
+        n.text = inner.text
+        n.children = inner.children
+        return true
+    end
+    for c in n.children
+        c.kind in TRIVIA_KINDS && continue
+        c.kind in MARKER_KINDS && continue
+        return _unwrap_leading_quote!(c)
+    end
+    return false
+end
+
+"Build a left-nested range chain: `insert_as_lhs(a, (b:c))` → `(a:b):c`,
+`insert_as_lhs(a, ((b:c):d))` → `((a:b):c):d`. Mirrors tree-sitter's native
+left-associative range_expression shape so the existing step-range flatten
+in RULES[\"range_expression\"] handles the output correctly."
+function _insert_as_lhs(new_lhs::Node, node::Node)::Node
+    if node.kind != "range_expression"
+        # Base case — simple expression becomes binary range rhs.
+        r = Node("range_expression")
+        push!(r.children, new_lhs)
+        push!(r.children, Node("operator", ":"))
+        push!(r.children, node)
+        return r
+    end
+    kids = _non_trivia(node.children)
+    # Flush form [lhs, rhs]; spaced form [lhs, op, rhs]. Normalise to (L, R).
+    local L, R
+    if length(kids) == 2
+        L, R = kids[1], kids[2]
+    elseif length(kids) == 3 && kids[2].kind == "operator"
+        L, R = kids[1], kids[3]
+    else
+        # Unexpected shape — fall back to binary wrap.
+        r = Node("range_expression")
+        push!(r.children, new_lhs)
+        push!(r.children, Node("operator", ":"))
+        push!(r.children, node)
+        return r
+    end
+    # Recurse: push new_lhs into L's leftmost position, then rebuild with R.
+    new_L = _insert_as_lhs(new_lhs, L)
+    r = Node("range_expression")
+    push!(r.children, new_L)
+    push!(r.children, Node("operator", ":"))
+    push!(r.children, R)
+    return r
+end
+
+"Detect and fix the `for i in 1 : n`-style misparse. Tree-sitter breaks the
+for_binding at `1` and leaves `:n` as the first statement of the loop body.
+If the loop body's first statement begins with a `quote_expression` at its
+leftmost leaf, fold that statement back into the for_binding as the RHS of
+a range_expression anchored at the original iter.
+
+Handles:
+    for i in 1 : n end          (binary range)
+    for i in a : b : c end      (step range — body stmt is range starting with quote)
+    for i in 1 : 2 : 3 : 4 end  (longer chain — recursed left-insert)
+    for i in f(x) : g(y) end    (complex operands — quote becomes call head)
+    for i in 1 : n body end     (body follows — peel off first stmt only)
+"
+function _fix_for_binding_range!(for_binding::Node, block::Node)
+    for_kids = _non_trivia(for_binding.children)
+    isempty(for_kids) && return
+    iter = for_kids[end]
+    iter.kind == "range_expression" && return
+    block_kids_all = _non_trivia(block.children)
+    isempty(block_kids_all) && return
+    first_stmt = block_kids_all[1]
+    _has_leading_quote(first_stmt) || return
+    _unwrap_leading_quote!(first_stmt)
+    new_iter = _insert_as_lhs(iter, first_stmt)
+    # Replace in for_binding.children (preserving surrounding trivia/markers).
+    for (i, c) in enumerate(for_binding.children)
+        if c === iter
+            for_binding.children[i] = new_iter
+            break
+        end
+    end
+    # Drop first_stmt from block.children (same reference).
+    for (i, c) in enumerate(block.children)
+        if c === first_stmt
+            deleteat!(block.children, i)
+            break
+        end
+    end
+end
+
+function _has_leading_quote(n::Node)::Bool
+    n.kind == "quote_expression" && return true
+    for c in n.children
+        c.kind in TRIVIA_KINDS && continue
+        c.kind in MARKER_KINDS && continue
+        return _has_leading_quote(c)
+    end
+    return false
+end
+
 RULES["for_statement"] = function (n)
     kids = _non_trivia(n.children)
+    # Find the block; apply the range-fixup pass once per for_binding.
+    block_node = nothing
+    for c in kids
+        if c.kind == "block"
+            block_node = c
+            break
+        end
+    end
+    if block_node !== nothing
+        for c in kids
+            c.kind == "for_binding" || continue
+            _fix_for_binding_range!(c, block_node)
+        end
+    end
     r = Node("for")
     iter = Node("iteration")
     body = Node("block")

@@ -55,52 +55,74 @@ Edit `julia.scm`. Common patterns:
 - New node needs indentation? Add `@append_indent_start`/`@prepend_indent_end`.
 - Semicolons displaced? Add `(parent_node ";" @delete)`.
 
-### 7. Run the full test suite
+### 7. Run the tests
+
+Every corpus snippet is its own `#[test]`; cargo runs them in parallel.
+Filter by name to iterate on a single case.
 
 ```bash
-cargo test --test format_test           # 68 hand-crafted tests (~2s)
-cargo test --test roundtrip_test        # 59 tree-sitter corpus snippets (~10s)
-cargo test --test ast_equivalence_test  # 828 JuliaSyntax.jl corpus (~2min)
+cargo test                                # full suite (~25s wall, parallel)
+cargo test --test format_test             # hand-crafted input→output cases
+cargo test --test roundtrip_test          # tree-sitter corpus, one test per snippet
+cargo test --test ast_equivalence_test    # JuliaSyntax.jl corpus, one test per line
+
+# Target a single snippet (JuliaSyntax line 197):
+cargo test --test ast_equivalence_test ast_line_0197
+
+# Target all known grammar gaps:
+cargo test --test ast_equivalence_test grammar_gap
+
+# Target a line range (any line 0100-0199):
+cargo test --test ast_equivalence_test ast_line_01
+
+# Target one round-trip case:
+cargo test --test roundtrip_test rt_expressions_some_name
 ```
 
-### 8. Update expected counts
+Never run watch-mode commands (`cargo watch`, `tree-sitter test --watch`,
+etc.) — they leave orphaned processes behind. Use one-shot invocations and
+targeted filters for iteration speed.
 
-The ast_equivalence_test has constants at the top:
-```rust
-const EXPECTED_INTENTIONAL_ERRORS: usize = 88;
-const EXPECTED_GRAMMAR_GAPS: usize = 56;
-const EXPECTED_FORMAT_ERRORS: usize = 0;
-const EXPECTED_AST_MISMATCHES: usize = 1;
+### 8. Update `tests/corpus/expectations.toml`
+
+Each snippet classified as an expected failure is listed here:
+
+```toml
+[[juliasyntax]]
+line = 197
+status = "grammar_gap"    # or "format_error" | "ast_mismatch"
+note  = "x.3 — numeric field access"
+
+[[roundtrip]]
+file  = "expressions"
+name  = "some header"
+note  = "why it regresses"
 ```
 
-The test fails if counts increase (regression) AND prints a message when counts decrease (improvement). Update the constants when you fix something.
+Behavior:
+- **Unlisted snippet fails** → regression. Fix the cause, or add the
+  snippet to `expectations.toml`.
+- **Listed snippet passes** → `expect_*` assertion reports "resolved".
+  Remove the entry from `expectations.toml` and the positive-path test
+  takes over.
 
-## Generating the grammar gap report
+The TOML is consumed by `build.rs`, which emits one `#[test]` per snippet
+into `$OUT_DIR`. Cargo re-runs the build script when the TOML or any
+corpus file changes.
 
-Add a temporary test file to list all gaps:
+## Generating the grammar gap list
+
+The list lives in `tests/corpus/expectations.toml`. If you want a fresh
+enumeration after a grammar change:
 
 ```bash
-cat > tests/check_gaps.rs << 'EOF'
-mod common;
-const JULIASYNTAX_CORPUS: &str = include_str!("corpus/juliasyntax_parser.jl");
+cargo test --test ast_equivalence_test grammar_gap 2>&1 | grep '^test ast_line_'
+```
 
-#[test]
-fn list_grammar_gaps() {
-    let snippets = common::extract_juliasyntax_snippets(JULIASYNTAX_CORPUS);
-    let mut gaps: Vec<(usize, &str, &str)> = Vec::new();
-    for s in &snippets {
-        if !s.is_intentional_error() && common::source_has_errors(&s.code) {
-            gaps.push((s.line_num, &s.code, &s.expected));
-        }
-    }
-    eprintln!("Grammar gaps: {}", gaps.len());
-    for (line, code, expected) in &gaps {
-        eprintln!("  L{line}: {code:?}  =>  {expected}");
-    }
-}
-EOF
-cargo test --test check_gaps -- --nocapture 2>&1 | grep '  L'
-rm tests/check_gaps.rs
+To find *new* grammar gaps that aren't yet listed:
+
+```bash
+cargo test --test ast_equivalence_test 2>&1 | awk '/Input does not parse cleanly/{getline; print}'
 ```
 
 ## Key files
@@ -109,10 +131,12 @@ rm tests/check_gaps.rs
 |------|---------|
 | `julia.scm` | ALL formatting rules — Topiary query captures |
 | `src/main.rs` | CLI binary (stdin/file → format → stdout) |
-| `tests/common/mod.rs` | Shared helpers: `format_julia()`, `source_has_errors()`, `tree_to_sexp()`, `extract_juliasyntax_snippets()` |
-| `tests/format_test.rs` | Hand-crafted input→output tests (68 tests, 9 modules) |
-| `tests/roundtrip_test.rs` | Tree-sitter corpus round-trip (no new ERROR nodes) |
-| `tests/ast_equivalence_test.rs` | JuliaSyntax.jl corpus AST comparison (828 snippets) |
+| `build.rs` | Codegen: reads corpus + `expectations.toml`, writes one `#[test]` per snippet into `$OUT_DIR` |
+| `tests/common/mod.rs` | Shared helpers: `format_julia()`, `source_has_errors()`, `tree_to_sexp()`, `assert_ast_equivalent()`, `assert_roundtrip_clean()`, `expect_grammar_gap()` |
+| `tests/format_test.rs` | Hand-crafted input→output tests |
+| `tests/roundtrip_test.rs` | Entry point — includes generated tree-sitter corpus tests |
+| `tests/ast_equivalence_test.rs` | Entry point — includes generated JuliaSyntax corpus tests |
+| `tests/corpus/expectations.toml` | Snippets expected to fail (grammar gaps, format errors, AST mismatches) |
 | `tests/corpus/juliasyntax_parser.jl` | JuliaSyntax.jl test corpus (extracted from v1.0) |
 | `tests/corpus/*.txt` | Tree-sitter corpus files (6 files, 59 snippets) |
 

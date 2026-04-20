@@ -1,0 +1,139 @@
+# Snippets expected to still fail after formatting.
+#
+# - `juliasyntax` entries cover `tests/corpus/juliasyntax_parser.jl`.
+#   `line` refers to the 1-based line number inside that file.
+#   `status` is one of:
+#     * grammar_gap   — tree-sitter-julia cannot parse the snippet
+#     * format_error  — formatting introduces ERROR nodes
+#     * ast_mismatch  — formatting preserves parse but changes AST structure
+#
+# - `roundtrip` entries cover `tests/corpus/<file>.txt` tree-sitter cases.
+#   `file` is the basename without `.txt`; `name` is the corpus header.
+#
+# When the underlying issue is fixed, delete the entry — the matching
+# `expect_*` assertion will flip to failing with "resolved" and point you
+# back here.
+
+# ─── JuliaSyntax.jl grammar gaps ────────────────────────────────────
+# tree-sitter-julia cannot produce a clean parse for these snippets.
+
+[[juliasyntax]]
+line = 197
+status = "grammar_gap"
+note = "x.3 — numeric field access"
+
+[[juliasyntax]]
+line = 198
+status = "grammar_gap"
+note = "f(2)2 — juxtaposition after call"
+
+[[juliasyntax]]
+line = 199
+status = "grammar_gap"
+note = "x' y — adjoint + juxtaposition (whitespace-sensitive regression)"
+
+[[juliasyntax]]
+line = 200
+status = "grammar_gap"
+note = "x 'y — character literal after identifier"
+
+[[juliasyntax]]
+line = 201
+status = "grammar_gap"
+note = "x@y — @ as infix operator"
+
+[[juliasyntax]]
+line = 225
+status = "grammar_gap"
+note = ".+ = — broadcast operator as LHS"
+
+[[juliasyntax]]
+line = 226
+status = "grammar_gap"
+note = ".+) — broadcast operator partial parse"
+
+[[juliasyntax]]
+line = 229
+status = "grammar_gap"
+note = "+) — operator partial parse"
+
+[[juliasyntax]]
+line = 309
+status = "grammar_gap"
+note = "<: ) — comparison operator partial parse"
+
+[[juliasyntax]]
+line = 311
+status = "grammar_gap"
+note = "<: = — subtype followed by assignment"
+
+[[juliasyntax]]
+line = 334
+status = "grammar_gap"
+note = "&) — unary ampersand partial parse"
+
+[[juliasyntax]]
+line = 336
+status = "grammar_gap"
+note = "&a — unary ampersand prefix"
+
+[[juliasyntax]]
+line = 370
+status = "grammar_gap"
+note = "@$ y — dollar-interpolated macro name"
+
+[[juliasyntax]]
+line = 540
+status = "grammar_gap"
+note = "return) — bare return partial parse"
+
+[[juliasyntax]]
+line = 723
+status = "grammar_gap"
+note = "import $A.@x — interpolated module in import with macro"
+
+[[juliasyntax]]
+line = 748
+status = "grammar_gap"
+note = "outer i = rhs — outer variable declaration"
+
+[[juliasyntax]]
+line = 749
+status = "grammar_gap"
+note = "outer (x,y) = rhs — outer with tuple destructuring"
+
+[[juliasyntax]]
+line = 799
+status = "grammar_gap"
+note = ":) — bare colon partial parse"
+
+[[juliasyntax]]
+line = 872
+status = "grammar_gap"
+note = "[x \\n, ] — vector with trailing newline+comma"
+
+[[juliasyntax]]
+line = 892
+status = "grammar_gap"
+note = "[x\\n, y] — newline-then-comma separator in vector"
+
+[[juliasyntax]]
+line = 896
+status = "grammar_gap"
+note = "[x=1, ; y=2] — mixed comma and semicolon separators"
+
+[[juliasyntax]]
+line = 955
+status = "grammar_gap"
+note = "[a \\n ;] — vector with trailing newline+semicolon"
+
+[[juliasyntax]]
+line = 1053
+status = "grammar_gap"
+note = "function f(public)  — contextual keyword 'public' as parameter"
+
+# ─── Round-trip regressions ─────────────────────────────────────────
+# No current regressions. Add entries here if the formatter stops being
+# safe on a specific tree-sitter corpus case.
+
+roundtrip = []

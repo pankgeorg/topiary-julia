@@ -45,10 +45,6 @@ js_sexp = "(quote-: +ꜝ)"
 code = ":+ꜝ"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2509"
 [[snippet]]
-js_sexp = "(quote-: (macrocall @m))"
-code = ":@m"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:241"
-[[snippet]]
 js_sexp = "+⁽¹⁾"
 code = "+⁽¹⁾"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1076"
@@ -64,10 +60,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(⩴ 1 2)"
 code = "1 ⩴ 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:245"
-[[snippet]]
-js_sexp = "(quote-: (macrocall @mac))"
-code = ":@mac"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:189"
 [[snippet]]
 js_sexp = "(. a (vect 1))"
 code = "a.[1]"
@@ -105,10 +97,6 @@ js_sexp = "(call-i public + 3)"
 code = "public + 3"
 origin = "corpus/fixtures/parse_errors.jl:7"
 [[snippet]]
-js_sexp = "(quote-: (macrocall @mdoc22098))"
-code = ":@mdoc22098"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:1453"
-[[snippet]]
 js_sexp = "(vect (= x 1) (parameters (= y 2)))"
 code = "[x=1, ; y=2]"
 origin = "corpus/fixtures/parse_errors.jl:17"
@@ -117,17 +105,9 @@ js_sexp = "(using (importpath A @foo))"
 code = "using A.@foo"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:522"
 [[snippet]]
-js_sexp = "(quote-: (macrocall @MethodTable))"
-code = ":@MethodTable"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/experimental.jl:458"
-[[snippet]]
 js_sexp = "(call-i (char '\\'') == (ref (string \"'\") 1))"
 code = " ''' == \"'\"[1]"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3521"
-[[snippet]]
-js_sexp = "(quote-: (macrocall (. DocsTest @mac)))"
-code = ":@DocsTest.mac"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:366"
 [[snippet]]
 js_sexp = "(vect (quote-: begin) (quote-: end))"
 code = "[:begin, :end]"
@@ -136,10 +116,6 @@ origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/predefined_form
 js_sexp = "(op= (::-i (ref x 1) Int) + 1)"
 code = "x[1]::Int += 1"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:2464"
-[[snippet]]
-js_sexp = "(quote-: (macrocall @macro_doctest))"
-code = ":@macro_doctest"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:52"
 [[snippet]]
 js_sexp = "(catch exc (block exc))"
 code = "catch exc ; exc"

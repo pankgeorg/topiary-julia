@@ -125,10 +125,6 @@ js_sexp = "(primitive 4294967312 SPJb12023)"
 code = "primitive type 4294967312 SPJb12023 end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3763"
 [[snippet]]
-js_sexp = "(macro (call var x) (block (call esc (call bindingexpr x))))"
-code = """macro var(x)\n    esc(bindingexpr(x))\nend"""
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/docs/bindings.jl:31"
-[[snippet]]
 js_sexp = "(primitive -4294967280 SPJc12023)"
 code = "primitive type -4294967280 SPJc12023 end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3764"
@@ -180,10 +176,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/b
 js_sexp = "(? verbose_linetable (call statementidx_lineinfo_printer code) (call inline_linfo_printer code))"
 code = """verbose_linetable ? statementidx_lineinfo_printer(code)\n                                          : inline_linfo_printer(code)"""
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/ssair/show.jl:848"
-[[snippet]]
-js_sexp = "(function (call var (::-i v AbstractRange)) (block (= s (call step v)) (= l (call length v)) (= vv (call-i (call-i (call abs2 s) * (call-i l + 1) l) / 12)) (if (|| (call-i l == 0) (call-i l == 1)) (block (return (call (call typeof vv) NaN)))) (return vv)))"
-code = """function var(v::AbstractRange)\n    s  = step(v)\n    l  = length(v)\n    vv = abs2(s) * (l + 1) * l / 12\n    if l == 0 || l == 1\n        return typeof(vv)(NaN)\n    end\n    return vv\nend"""
-origin = "~/.julia/packages/Statistics/gbcbG/src/Statistics.jl:414"
 [[snippet]]
 js_sexp = "(? (&& (call-i (. mt module) === Core) (&& (call-i (. mt defs) isa (. Core TypeMapEntry)) (call-i (. (::-i (. (. mt defs) func) Method) sig) === Tuple))) (string \"builtin function\") (string \"generic function\"))"
 code = """ mt.module === Core && mt.defs isa Core.TypeMapEntry && (mt.defs.func::Method).sig === Tuple ?\n                    \"builtin function\"\n               : # else\n                    \"generic function\""""

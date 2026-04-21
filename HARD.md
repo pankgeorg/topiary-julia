@@ -96,6 +96,21 @@ surfaces as a spaced range colon. Fixing this needs scanner-side
 state tracking (a "ternary_depth" counter that persists across
 terminators), not a grammar-only change. Reverted.
 
+## Chained interpolated-parens in scoped/import paths
+
+Example: `import ..($(ws)).$(sym)`, `A.($(ws)).bar`.
+
+The singleton case `import ..($(name))` landed cleanly (commit df25722).
+The chained form requires `_scoped_identifier` to accept a parenthesized
+interpolation as its head so the `.$(sym)` tail can continue. Tried
+2026-04-21 by adding `parenthesize($.interpolation_expression)` to the
+head choice — instantly conflicts with `_exportable`, which also
+permits `parenthesize($._exportable)` at the same structural
+position (`using (expr)` / parenthesized-exportable tail). Resolving
+this needs either an explicit conflict declaration or splitting the
+interp-paren head into a dedicated rule that `_exportable` doesn't
+reach. Reverted.
+
 ## Empty-body if / elseif with bare `;`
 
 Example: `if cond; ; end`, `if cond\n;\nend`, `"elseif false\n        ;\n    "`.

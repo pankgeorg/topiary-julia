@@ -45,14 +45,6 @@ js_sexp = "(⩴ 1 2)"
 code = "1 ⩴ 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:245"
 [[snippet]]
-js_sexp = "(. a (vect 1))"
-code = "a.[1]"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:946"
-[[snippet]]
-js_sexp = "(. a (braces 1))"
-code = "a.{1}"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:947"
-[[snippet]]
 js_sexp = "(:= 1 2)"
 code = "1 := 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:243"
@@ -68,10 +60,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(vcat a)"
 code = """[a\n  ;]"""
 origin = "corpus/fixtures/parse_errors.jl:14"
-[[snippet]]
-js_sexp = "(. sin (vect 1))"
-code = "sin.[1]"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1516"
 [[snippet]]
 js_sexp = "(call-i public + 3)"
 code = "public + 3"
@@ -96,10 +84,6 @@ origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/text/predefined_form
 js_sexp = "(op= (::-i (ref x 1) Int) + 1)"
 code = "x[1]::Int += 1"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:2464"
-[[snippet]]
-js_sexp = "(catch exc (block exc))"
-code = "catch exc ; exc"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1516"
 [[snippet]]
 js_sexp = "(importpath Base Foo == bar)"
 code = " Base.Foo.==.bar"

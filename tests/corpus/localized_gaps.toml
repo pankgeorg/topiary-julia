@@ -129,17 +129,9 @@ js_sexp = "(do (tuple x) (block (macrocall @noinline) x))"
 code = " do x @noinline; x end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:291"
 [[snippet]]
-js_sexp = "(call Expr (quote-: call) (quote-: ~) (quote-: x) 1)"
-code = "Expr(:call, :~, :x, 1)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/JuliaSyntax/test/expr.jl:681"
-[[snippet]]
 js_sexp = "(vect (quote-: begin) (quote-: header) (quote-: end))"
 code = "[:begin, :header, :end]"
 origin = "~/.julia/packages/PrettyTables/iMosF/src/backends/latex/types.jl:77"
-[[snippet]]
-js_sexp = "(call Expr (quote-: call) (quote-: (. ~)) (quote-: x) (quote-: y))"
-code = "Expr(:call, :.~, :x, :y)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2296"
 [[snippet]]
 js_sexp = "(import (importpath Base Math @horner))"
 code = "import Base.Math.@horner"
@@ -212,10 +204,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(let (block (= x outer)) (error-t i = rhs) (block body))"
 code = """let x = outer i = rhs\n    body\nend"""
 origin = "corpus/fixtures/parse_errors.jl:10"
-[[snippet]]
-js_sexp = "(call Expr (quote-: call) (quote-: (. ~)) (call Expr (quote-: vect) 1 2))"
-code = "Expr(:call, :.~, Expr(:vect, 1, 2))"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2298"
 [[snippet]]
 js_sexp = "(call import! (::-i x BigInt) a b c d e f)"
 code = "import!(x::BigInt, a, b, c, d, e, f)"

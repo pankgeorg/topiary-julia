@@ -96,6 +96,23 @@ surfaces as a spaced range colon. Fixing this needs scanner-side
 state tracking (a "ternary_depth" counter that persists across
 terminators), not a grammar-only change. Reverted.
 
+## Empty-body if / elseif with bare `;`
+
+Example: `if cond; ; end`, `if cond\n;\nend`, `"elseif false\n        ;\n    "`.
+
+JuliaSyntax parses these as `if cond (block) end` — condition followed
+by an empty block followed by `end`. Our grammar's `block` requires at
+least one `_block_form` (via `sep1`), so a `;`-only body errors.
+
+Attempted 2026-04-21 by replacing `optional($._terminator)` with
+`repeat($._terminator)` around the block in if_statement / elseif_clause.
+Fails fast with a `block` conflict — the repeated terminator slot
+overlaps with `block`'s internal `sep1($._terminator, _block_form)`
+separator, and GLR can't decide where the outer repeat ends and
+the block starts. A proper fix needs either a separate "empty block"
+variant of the block rule or a targeted conflict declaration, neither
+of which is a one-shot edit. Reverted.
+
 ## Very-long multi-line edge cases (~20 snippets)
 
 Large families under `localized_gaps.toml` that are likely the same

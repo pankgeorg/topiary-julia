@@ -73,21 +73,9 @@ js_sexp = "(= (function g) 1)"
 code = "function g end = 1"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1479"
 [[snippet]]
-js_sexp = "(macrocall @test (call-i (call-i 0.1 + 0.1 0.1) ≈ 0.3))"
-code = "@test .1+.1+.1 ≈ .3"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1755"
-[[snippet]]
 js_sexp = "(do (tuple x) (block (macrocall @inline) x))"
 code = " do x @inline; x end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:286"
-[[snippet]]
-js_sexp = "(macrocall @test (call-i (call-i 0.1 + 0.1 0.1) != 0.3))"
-code = "@test .1+.1+.1 != .3"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1754"
-[[snippet]]
-js_sexp = "(macrocall @test (call-i (call-i (call-i 0.1 + 0.1 0.1) - 0.3) ≉ 0))"
-code = "@test .1+.1+.1-.3 ≉ 0"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1756"
 [[snippet]]
 js_sexp = "(do (tuple x) (block (macrocall @noinline) x))"
 code = " do x @noinline; x end"
@@ -128,10 +116,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(op= chars - (= d (call ndigits (call-i len - chars))))"
 code = "chars -= d = ndigits(len - chars)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/strings/io.jl:226"
-[[snippet]]
-js_sexp = "(macrocall @test (call-i (call-i (call-i 0.1 + 0.1 0.1) - 0.3) ≈ 0) (= atol (call eps 0.3)))"
-code = "@test .1+.1+.1-.3 ≈ 0 atol=eps(.3)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1757"
 [[snippet]]
 js_sexp = "(let (block (= x outer)) (error-t i = rhs) (block body))"
 code = """let x = outer i = rhs\n    body\nend"""

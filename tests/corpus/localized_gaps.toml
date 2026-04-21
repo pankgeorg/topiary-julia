@@ -149,25 +149,9 @@ js_sexp = "(call-i (char '\\xc0\\x80') == (call reinterpret Char 0xc0800000))"
 code = " '\\xc0\\x80' == reinterpret(Char, 0xc0800000)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3503"
 [[snippet]]
-js_sexp = "(generator (macrocall @inbounds (call iszero (ref (. a bits) i))) (iteration (in i (call-i 1 : (call min n i)))))"
-code = "@inbounds iszero(a.bits[i]) for i in 1:min(n, i)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitset.jl:416"
-[[snippet]]
-js_sexp = "(generator (macrocall @inbounds (call iszero (ref (. a bits) i))) (iteration (in i (call-i (call max 1 (call-i j + 1)) : n))))"
-code = "@inbounds iszero(a.bits[i]) for i in max(1, j+1):n"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitset.jl:418"
-[[snippet]]
-js_sexp = "(generator (macrocall @inbounds (call-i (ref r (call-i i + 1)) - (ref r i))) (iteration (in i (call-i (call firstindex r) : (call-i (call lastindex r) - 1)))))"
-code = "@inbounds r[i+1] - r[i] for i in firstindex(r):lastindex(r)-1"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/multidimensional.jl:1044"
-[[snippet]]
 js_sexp = "(for (iteration (in (call f) (call-i 1 : 3))) (block (call push! a (call f)) (call push! fs f)))"
 code = """for f() in 1:3\n        push!(a, f())\n        push!(fs, f)\n    end"""
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:725"
-[[snippet]]
-js_sexp = "(generator (macrocall @inbounds (call f (ref (. a bits) i) (ref (. b bits) (call-i i - shift)))) (iteration (in i (call-i (call max 1 (call-i i + 1)) : (call min n j)))))"
-code = "@inbounds f(a.bits[i], b.bits[i - shift]) for i in max(1, i+1):min(n, j)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitset.jl:417"
 [[snippet]]
 js_sexp = "(catch ex (block (call (. GC gc)) (call catch_backtrace) (= caught true)))"
 code = """catch ex\n        GC.gc()\n        catch_backtrace()\n        caught = true\n    """

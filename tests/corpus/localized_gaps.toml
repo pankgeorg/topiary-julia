@@ -61,10 +61,6 @@ js_sexp = "(vect (= x 1) (parameters (= y 2)))"
 code = "[x=1, ; y=2]"
 origin = "corpus/fixtures/parse_errors.jl:17"
 [[snippet]]
-js_sexp = "(using (importpath A @foo))"
-code = "using A.@foo"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:522"
-[[snippet]]
 js_sexp = "(call-i (char '\\'') == (ref (string \"'\") 1))"
 code = " ''' == \"'\"[1]"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3521"
@@ -72,10 +68,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(importpath Base Foo == bar)"
 code = " Base.Foo.==.bar"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2060"
-[[snippet]]
-js_sexp = "(: (importpath A B) (importpath c @d))"
-code = "import A.B: c.@d"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:521"
 [[snippet]]
 js_sexp = "(= (function g) 1)"
 code = "function g end = 1"
@@ -93,10 +85,6 @@ js_sexp = "(macrocall @test (call-i (call-i 0.1 + 0.1 0.1) != 0.3))"
 code = "@test .1+.1+.1 != .3"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1754"
 [[snippet]]
-js_sexp = "(import (importpath Base @__doc__))"
-code = "import Base.@__doc__"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/docs.jl:474"
-[[snippet]]
 js_sexp = "(macrocall @test (call-i (call-i (call-i 0.1 + 0.1 0.1) - 0.3) ≉ 0))"
 code = "@test .1+.1+.1-.3 ≉ 0"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/numbers.jl:1756"
@@ -104,14 +92,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(do (tuple x) (block (macrocall @noinline) x))"
 code = " do x @noinline; x end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:291"
-[[snippet]]
-js_sexp = "(import (importpath Base Math @horner))"
-code = "import Base.Math.@horner"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/complex.jl:372"
-[[snippet]]
-js_sexp = "(: (importpath Base) (importpath Math @horner))"
-code = "using Base: Math.@horner"
-origin = "~/.julia/packages/LogExpFunctions/iNqo2/src/LogExpFunctions.jl:4"
 [[snippet]]
 js_sexp = "(elseif false (block))"
 code = """elseif false\n        ;\n    """

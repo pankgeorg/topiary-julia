@@ -88,11 +88,6 @@ status = "grammar_gap"
 note = "return) — bare return partial parse"
 
 [[juliasyntax]]
-line = 723
-status = "grammar_gap"
-note = "import $A.@x — interpolated module in import with macro"
-
-[[juliasyntax]]
 line = 748
 status = "grammar_gap"
 note = "outer i = rhs — outer variable declaration"

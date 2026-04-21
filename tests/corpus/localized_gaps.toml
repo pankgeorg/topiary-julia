@@ -17,10 +17,6 @@ js_sexp = "'"
 code = "'"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2443"
 [[snippet]]
-js_sexp = "."
-code = "."
-origin = "~/.julia/packages/Reexport/OxbHO/src/Reexport.jl:26"
-[[snippet]]
 js_sexp = "⋅"
 code = "·"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:837"
@@ -105,10 +101,6 @@ js_sexp = "(primitive 0 SPJa12023)"
 code = "primitive type 0 SPJa12023 end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3762"
 [[snippet]]
-js_sexp = "(import (importpath . . ($ old_workspace_name)))"
-code = "import ..($(old_workspace_name))"
-origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:43"
-[[snippet]]
 js_sexp = "(op= chars - (= d (call ndigits (call-i len - chars))))"
 code = "chars -= d = ndigits(len - chars)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/strings/io.jl:226"
@@ -192,10 +184,6 @@ origin = "~/.julia/packages/Pluto/6smog/src/notebook/Export.jl:39"
 js_sexp = "(catch ex (block (if (call-pre ! (call-i ex isa UndefVarError)) (block (macrocall @warn (string \"Failed to move variable \" symbol \" to new workspace:\")) (call showerror (ref original_stderr) ex (call stacktrace (call catch_backtrace)))))))"
 code = """catch ex\n                    if !(ex isa UndefVarError)\n                        @warn \"Failed to move variable $(symbol) to new workspace:\"\n                        showerror(original_stderr[], ex, stacktrace(catch_backtrace()))\n                    end\n                """
 origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:87"
-[[snippet]]
-js_sexp = "(elseif (&& (call-i (. ex head) === (quote-: import)) (call all (-> (tuple e) (call-i (. e head) === (quote-: .))) (. ex args))) (block (= symbols (typed_comprehension Any (generator (ref (. e args) end) (iteration (in e (. ex args)))))) (return (call Expr (quote-: toplevel) ex (quote-: (call ($ eval) ($ m) (call Expr (quote-: export) (... ($ symbols)))))))) (block (= modules (typed_comprehension Any (generator (ref (. e args) end) (iteration (in e (. ex args))))))))"
-code = """elseif ex.head === :import && all(e -> e.head === :., ex.args)\n        # @reexport import Foo.bar, Baz.qux\n        symbols = Any[e.args[end] for e in ex.args]\n        return Expr(:toplevel, ex, :($eval($m, Expr(:export, $symbols...))))\n    else\n        # @reexport using Foo, Bar, Baz\n        modules = Any[e.args[end] for e in ex.args]\n    """
-origin = "~/.julia/packages/Reexport/OxbHO/src/Reexport.jl:31"
 [[snippet]]
 js_sexp = "(function (where (call var (::-i x (curly Vector T))) (<: T AbstractFloat)) (block (= (tuple mean_val n) (call mean_count x)) (if (call-pre ! (call isnan mean_val)) (block (= sum_square (call zero (call eltype x))) (for (iteration (in i x)) (block (if (call-pre ! (call isnan i)) (block (op= sum_square + (call-i (call-i i - mean_val) ^ 2)))))) (return (call-i sum_square / (call-i n - (call one (call eltype x)))))) (block (return mean_val)))))"
 code = """function var(x::Vector{T}) where T<:AbstractFloat\n    mean_val, n = mean_count(x)\n    if !isnan(mean_val)\n        sum_square = zero(eltype(x))\n        for i in x\n            if !isnan(i)\n                sum_square += (i - mean_val)^2\n            end\n        end\n        return sum_square / (n - one(eltype(x)))\n    else\n        return mean_val # NaN or NaN32\n    end\nend"""

@@ -33,22 +33,6 @@ js_sexp = "(& x)"
 code = "&x"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1733"
 [[snippet]]
-js_sexp = "+̂"
-code = "+̂"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1074"
-[[snippet]]
-js_sexp = "+̂′"
-code = "+̂′"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1075"
-[[snippet]]
-js_sexp = "(quote-: +ꜝ)"
-code = ":+ꜝ"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2509"
-[[snippet]]
-js_sexp = "+⁽¹⁾"
-code = "+⁽¹⁾"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1076"
-[[snippet]]
 js_sexp = "(≔ 1 2)"
 code = "1 ≔ 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:244"
@@ -72,10 +56,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(:= 1 2)"
 code = "1 := 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:243"
-[[snippet]]
-js_sexp = "(call-i a +ꜝ b)"
-code = "a +ꜝ b"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2509"
 [[snippet]]
 js_sexp = "(curly * 1 2)"
 code = "*{1, 2}"

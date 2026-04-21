@@ -109,10 +109,6 @@ js_sexp = "(import (importpath . . ($ old_workspace_name)))"
 code = "import ..($(old_workspace_name))"
 origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:43"
 [[snippet]]
-js_sexp = "(.= (let (block) (block (op= execs + 1) array)) 4)"
-code = "let; execs += 1; array; end .= 4"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3630"
-[[snippet]]
 js_sexp = "(op= chars - (= d (call ndigits (call-i len - chars))))"
 code = "chars -= d = ndigits(len - chars)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/strings/io.jl:226"
@@ -124,10 +120,6 @@ origin = "corpus/fixtures/parse_errors.jl:10"
 js_sexp = "(call import! (::-i x BigInt) a b c d e f)"
 code = "import!(x::BigInt, a, b, c, d, e, f)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/gmp.jl:263"
-[[snippet]]
-js_sexp = "(.op= (let (block (= x array)) (block (op= execs + 1) x)) + 2)"
-code = "let x = array; execs += 1; x; end .+= 2"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3627"
 [[snippet]]
 js_sexp = "(primitive 4294967312 SPJb12023)"
 code = "primitive type 4294967312 SPJb12023 end"

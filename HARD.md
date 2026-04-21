@@ -83,6 +83,19 @@ Accepted the narrower `:@m` form in commit `491f0cb`; the scoped
 `_scoped_identifier` branch exploded parser.c past GitHub's 100 MB
 limit. Use `:(@A.foo)` as a parse-equivalent workaround.
 
+## Ternary with newline before `:`
+
+Example: `a ? b\n: c`, `iseven(l) ? x\n: y`.
+
+Attempted 2026-04-21 with `optional($._terminator)` inserted between the
+then-branch and `_ternary_colon`. Generated cleanly, but the parse
+flipped to `range_expression` — the external scanner only emits
+`TERNARY_COLON` while the ternary state is live, and consuming a
+terminator token takes the parser out of that state, so the next `:`
+surfaces as a spaced range colon. Fixing this needs scanner-side
+state tracking (a "ternary_depth" counter that persists across
+terminators), not a grammar-only change. Reverted.
+
 ## Very-long multi-line edge cases (~20 snippets)
 
 Large families under `localized_gaps.toml` that are likely the same

@@ -125,10 +125,6 @@ js_sexp = "(: (importpath Base) (importpath Math @horner))"
 code = "using Base: Math.@horner"
 origin = "~/.julia/packages/LogExpFunctions/iNqo2/src/LogExpFunctions.jl:4"
 [[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize w)) (call-i w === p))"
-code = "@nospecialize(w) -> w === p"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/show.jl:712"
-[[snippet]]
 js_sexp = "(elseif false (block))"
 code = """elseif false\n        ;\n    """
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:7081"
@@ -153,14 +149,6 @@ js_sexp = "(primitive 0 SPJa12023)"
 code = "primitive type 0 SPJa12023 end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3762"
 [[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize t)) (call-i t === Bottom))"
-code = "@nospecialize(t) -> t === Bottom"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:1652"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call iscall y x))"
-code = "@nospecialize(x) -> iscall(y, x)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irutils.jl:23"
-[[snippet]]
 js_sexp = "(import (importpath . . ($ old_workspace_name)))"
 code = "import ..($(old_workspace_name))"
 origin = "~/.julia/packages/Pluto/6smog/src/runner/PlutoRunner/src/evaluation/deleting globals.jl:43"
@@ -172,14 +160,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(op= chars - (= d (call ndigits (call-i len - chars))))"
 code = "chars -= d = ndigits(len - chars)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/strings/io.jl:226"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize a)) (. (::-i a Const) val))"
-code = "@nospecialize(a) -> (a::Const).val"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/tfuncs.jl:2682"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call isinvoke y x))"
-code = "@nospecialize(x) -> isinvoke(y, x)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irutils.jl:37"
 [[snippet]]
 js_sexp = "(macrocall @test (call-i (call-i (call-i 0.1 + 0.1 0.1) - 0.3) ≈ 0) (= atol (call eps 0.3)))"
 code = "@test .1+.1+.1-.3 ≈ 0 atol=eps(.3)"
@@ -193,14 +173,6 @@ js_sexp = "(call import! (::-i x BigInt) a b c d e f)"
 code = "import!(x::BigInt, a, b, c, d, e, f)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/gmp.jl:263"
 [[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize stmt)) (call-i stmt == invoke_expr))"
-code = "@nospecialize(stmt)->stmt==invoke_expr"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/ssair.jl:696"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call (. Meta isexpr) x (quote-: new)))"
-code = "@nospecialize(x)->Meta.isexpr(x, :new)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irpasses.jl:1075"
-[[snippet]]
 js_sexp = "(.op= (let (block (= x array)) (block (op= execs + 1) x)) + 2)"
 code = "let x = array; execs += 1; x; end .+= 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3627"
@@ -208,10 +180,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/t
 js_sexp = "(primitive 4294967312 SPJb12023)"
 code = "primitive type 4294967312 SPJb12023 end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/core.jl:3763"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call isinvokemodify y x))"
-code = "@nospecialize(x) -> isinvokemodify(y, x)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:1775"
 [[snippet]]
 js_sexp = "(op= (::-i is_interactive Bool) | interactiveinput)"
 code = "is_interactive::Bool |= interactiveinput"
@@ -233,17 +201,9 @@ js_sexp = "(call-i (char '\\xc0\\x80') == (call reinterpret Char 0xc0800000))"
 code = " '\\xc0\\x80' == reinterpret(Char, 0xc0800000)"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3503"
 [[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call valid_as_lattice x true))"
-code = "@nospecialize(x) -> valid_as_lattice(x, true)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:1456"
-[[snippet]]
 js_sexp = "(.= (::-i (let (block) (block (op= execs + 1) array)) (curly Vector Int)) 7)"
 code = "let; execs += 1; array; end::Vector{Int} .= 7"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3636"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize stmt)) (call (. Meta isexpr) stmt (quote-: invoke)))"
-code = "@nospecialize(stmt)->Meta.isexpr(stmt, :invoke)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/ssair.jl:623"
 [[snippet]]
 js_sexp = "(generator (macrocall @inbounds (call iszero (ref (. a bits) i))) (iteration (in i (call-i 1 : (call min n i)))))"
 code = "@inbounds iszero(a.bits[i]) for i in 1:min(n, i)"
@@ -256,14 +216,6 @@ origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/b
 js_sexp = "(.op= (::-i (let (block (= x array)) (block (op= execs + 1) x)) (curly Vector Int)) + 2)"
 code = "let x = array; execs += 1; x; end::Vector{Int} .+= 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:3633"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize a)) (? (call isvarargtype a) a (call widenconst a)))"
-code = "@nospecialize(a) -> isvarargtype(a) ? a : widenconst(a)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/typeutils.jl:51"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (call valid_as_lattice (call unwrapva x) true))"
-code = "@nospecialize(x) -> valid_as_lattice(unwrapva(x), true)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:523"
 [[snippet]]
 js_sexp = "(generator (macrocall @inbounds (call-i (ref r (call-i i + 1)) - (ref r i))) (iteration (in i (call-i (call firstindex r) : (call-i (call lastindex r) - 1)))))"
 code = "@inbounds r[i+1] - r[i] for i in firstindex(r):lastindex(r)-1"
@@ -285,17 +237,9 @@ js_sexp = "(.op= (::-i (macrocall-p @views (ref (call reshape x 2 2) (vect begin
 code = "@views(reshape(x,2,2)[[begin],[begin,end]])::AbstractMatrix{Int} .+= [2]"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/subarray.jl:674"
 [[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize t)) (|| (call-pre ! (call isa t DataType)) (|| (call-pre ! (<: t Tuple)) (call-pre ! (call isknownlength t)))))"
-code = "@nospecialize(t) -> !isa(t, DataType) || !(t <: Tuple) || !isknownlength(t)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/compiler/abstractinterpretation.jl:1463"
-[[snippet]]
 js_sexp = "(catch ex (block (call (. GC gc)) (call catch_backtrace) (= caught true)))"
 code = """catch ex\n        GC.gc()\n        catch_backtrace()\n        caught = true\n    """
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/exceptions.jl:379"
-[[snippet]]
-js_sexp = "(-> (tuple (macrocall-p @nospecialize x)) (&& (call (. Meta isexpr) x (quote-: foreigncall)) (call-i (ref (. x args) 1) == (quote-: (quote-: some_ccall)))))"
-code = "@nospecialize(x) -> Meta.isexpr(x, :foreigncall) && x.args[1] == :(:some_ccall)"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/irpasses.jl:1076"
 [[snippet]]
 js_sexp = "(for (iteration (in i (call-i (call length Bc) : -1 2))) (block (= (ref Bc i) (call-i (call-i (ref Bc i) << 1) | (call-i (ref Bc (call-i i - 1)) >>> 63)))))"
 code = """for i = length(Bc) : -1 : 2\n        Bc[i] = (Bc[i] << 1) | (Bc[i-1] >>> 63)\n    end"""

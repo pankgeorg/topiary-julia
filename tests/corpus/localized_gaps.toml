@@ -69,13 +69,13 @@ js_sexp = "(importpath Base Foo == bar)"
 code = " Base.Foo.==.bar"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:2060"
 [[snippet]]
-js_sexp = "(= (function g) 1)"
-code = "function g end = 1"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1479"
-[[snippet]]
 js_sexp = "(do (tuple x) (block (macrocall @inline) x))"
 code = " do x @inline; x end"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/compiler/inline.jl:286"
+[[snippet]]
+js_sexp = "(quote-: (= (function g) 1))"
+code = ":(function g end = 1)"
+origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/syntax.jl:1479"
 [[snippet]]
 js_sexp = "(do (tuple x) (block (macrocall @noinline) x))"
 code = " do x @noinline; x end"

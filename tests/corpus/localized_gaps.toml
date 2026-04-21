@@ -49,14 +49,6 @@ js_sexp = "(:= 1 2)"
 code = "1 := 2"
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:243"
 [[snippet]]
-js_sexp = "(curly * 1 2)"
-code = "*{1, 2}"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:627"
-[[snippet]]
-js_sexp = "(curly * 1 x)"
-code = "*{1, x}"
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/show.jl:628"
-[[snippet]]
 js_sexp = "(vcat a)"
 code = """[a\n  ;]"""
 origin = "corpus/fixtures/parse_errors.jl:14"

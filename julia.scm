@@ -421,6 +421,13 @@
 ;; Spaces are semantic (like matrix expressions), so preserve as @leaf.
 (curly_expression (matrix_row)) @leaf
 
+;; A docstring and its target: `"""doc""" name` on one line must keep a space
+;; (`"""doc"""name` means something else); a line break stays a line break.
+(doc_string_binding
+  [(string_literal) (prefixed_string_literal)] @append_input_softline
+  .
+  (_))
+
 ;; =============================================================
 ;; 7. Top-level / source file structure
 ;; =============================================================

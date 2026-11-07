@@ -202,3 +202,12 @@ mod idempotence {
     idempotent_test!(abstract_type, "abstract type Shape end\n");
     idempotent_test!(primitive_type, "primitive type UInt8 8 end\n");
 }
+
+/// Formattings that used to change the meaning of the code (found by verifying with
+/// JuliaSyntax, see tests/jlparse_test.rs): each must now keep it.
+mod meaning_preserved {
+    use super::common;
+    // `""" doc """ name` on one line documents `name`; `"""…"""name` would not.
+    format_test!(docstring_same_line, "\"\"\"doc\"\"\" name\n", "\"\"\"doc\"\"\" name");
+    format_test!(docstring_next_line, "\"\"\"\ndoc\n\"\"\"\nname\n", "\"\"\"\ndoc\n\"\"\"\nname");
+}

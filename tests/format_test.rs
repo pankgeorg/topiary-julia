@@ -219,4 +219,11 @@ mod meaning_preserved {
     format_test!(unary_minus_spaced_literal, "x = - 2\n", "x = - 2");
     format_test!(unary_minus_literal, "x = -2.5\n", "x = -2.5");
     format_test!(unary_minus_identifier, "x = - y\n", "x = -y");
+    // spaced ranges (tree-sitter-julia read `1 : n` here as `1` then a quote `:n`)
+    format_test!(for_spaced_range, "for i = 1 : n\nf(i)\nend\n", "for i = 1 : n\n    f(i)\nend");
+    format_test!(for_in_spaced_range, "for i in a+1 : -1 : 2\nend\n", "for i in a + 1 : -1 : 2\nend");
+    format_test!(vector_spaced_range, "[1 : n]\n", "[1 : n]");
+    // string-macro suffixes that are word operators
+    format_test!(string_macro_suffix_in, "x\"s\"in\n", "x\"s\"in");
+    format_test!(command_macro_suffix_in, "x`s`in\n", "x`s`in");
 }

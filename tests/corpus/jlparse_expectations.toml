@@ -264,27 +264,25 @@ status = "js_error"
 
 [[snippet]]
 id = "jl_gap_ts_0033"
-status = "protected"
-note = "for:GrammarGap"
+status = "js_error"
 
 [[snippet]]
 id = "jl_gap_ts_0034"
 status = "protected"
-note = "for:GrammarGap"
+note = "Identifier:GrammarGap"
 
 [[snippet]]
 id = "jl_gap_ts_0035"
-status = "js_error"
+status = "protected"
+note = "Identifier:GrammarGap"
 
 [[snippet]]
 id = "jl_gap_ts_0036"
-status = "protected"
-note = "Identifier:GrammarGap"
+status = "js_error"
 
 [[snippet]]
 id = "jl_gap_ts_0037"
-status = "protected"
-note = "Identifier:GrammarGap"
+status = "js_error"
 
 [[snippet]]
 id = "jl_gap_ts_0038"
@@ -296,38 +294,30 @@ status = "js_error"
 
 [[snippet]]
 id = "jl_gap_ts_0040"
-status = "js_error"
-
-[[snippet]]
-id = "jl_gap_ts_0041"
-status = "js_error"
-
-[[snippet]]
-id = "jl_gap_ts_0042"
 status = "protected"
 note = "Identifier:GrammarGap"
 
 [[snippet]]
-id = "jl_gap_ts_0043"
+id = "jl_gap_ts_0041"
 status = "protected"
 note = "=:GrammarGap"
 
 [[snippet]]
-id = "jl_gap_ts_0044"
+id = "jl_gap_ts_0042"
 status = "js_error"
 
 [[snippet]]
-id = "jl_gap_ts_0045"
+id = "jl_gap_ts_0043"
 status = "protected"
 note = "Identifier:GrammarGap"
 
 [[snippet]]
-id = "jl_gap_ts_0046"
+id = "jl_gap_ts_0044"
 status = "protected"
 note = "toplevel:GrammarGap,toplevel:GrammarGap"
 
 [[snippet]]
-id = "jl_gap_ts_0047"
+id = "jl_gap_ts_0045"
 status = "protected"
 note = "Identifier:GrammarGap"
 
@@ -520,16 +510,6 @@ status = "js_error"
 [[snippet]]
 id = "jl_line_0453"
 status = "js_error"
-
-[[snippet]]
-id = "jl_line_0481"
-status = "protected"
-note = "String:NotPreserved"
-
-[[snippet]]
-id = "jl_line_0487"
-status = "protected"
-note = "String:NotPreserved"
 
 [[snippet]]
 id = "jl_line_0537"

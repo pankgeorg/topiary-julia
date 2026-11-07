@@ -15,6 +15,20 @@ cargo run -- -f myfile.jl
 cargo run -- --check -f myfile.jl
 ```
 
+## Julia's own parser as the referee (`jlparse`, default on)
+
+Every formatting is checked by **JuliaSyntax** — the parser Julia 1.13 ships — compiled to
+WebAssembly ([`jlparse/`](jlparse/README.md)) and run in-process by wasmtime; no Julia install
+needed:
+
+- an output that parses to a different tree than the input is never written;
+- code tree-sitter-julia can't parse (grammar gaps such as `&x`, `1 := 2`, `[x\n, y]`) is
+  left verbatim and the rest of the file is formatted (`note: f.jl:3:5: left `&` verbatim`);
+- the same for any node whose formatting would change its meaning (e.g. `[x +y]`, `- 2`);
+- syntax errors are reported with JuliaSyntax's messages: `f.jl:1:4: error: Expected `)` …`.
+
+`--no-verify` gives plain Topiary; `topiary-julia jl-parse [--sem]` prints JuliaSyntax's tree.
+
 ## How it works
 
 Topiary formats code by matching tree-sitter parse trees against query patterns (`.scm` files). The queries annotate nodes with formatting directives like `@append_space`, `@append_hardline`, `@append_indent_start`, `@leaf`, etc.
@@ -48,7 +62,16 @@ Topiary formats code by matching tree-sitter parse trees against query patterns 
 format_test:          68/68 pass   — hand-crafted input→output tests
 roundtrip_test:       59/59 pass   — tree-sitter corpus, no new ERROR nodes
 ast_equivalence_test: 693/694 pass — JuliaSyntax.jl corpus, 99.9% AST preservation
+jlparse_test:         904/904 pass — JuliaSyntax-in-Wasm: native node-for-node check,
+                      verify unit tests, verified formatting of the JuliaSyntax corpus
+                      (828 snippets: 661 clean, 18 protected, 149 not valid as a file)
+                      and of the 69 known grammar gaps (40 formatted with the gap left
+                      verbatim, 29 not valid as a file) — see jlparse/GAPS.md
 ```
+
+On Julia 1.13's `base/*.jl` (164 files, 3.6 MB), verified formatting succeeds on 164/164
+(plain Topiary 157/164) and catches 5 files where plain Topiary silently changes meaning
+(spaced ranges `for i = 1 : n` misparsed by tree-sitter; `""" doc""" name` → `"""…"""name`).
 
 ### AST equivalence breakdown (828 snippets)
 

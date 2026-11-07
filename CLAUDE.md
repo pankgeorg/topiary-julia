@@ -66,6 +66,9 @@ cargo test --test format_test             # hand-crafted input→output cases
 cargo test --test roundtrip_test          # tree-sitter corpus, one test per snippet
 cargo test --test ast_equivalence_test    # JuliaSyntax.jl corpus, one test per line
 
+cargo test --test jlparse_test           # JuliaSyntax-in-Wasm: verified formatting of the
+                                         # JuliaSyntax corpus + every known grammar gap
+
 # Target a single snippet (JuliaSyntax line 197):
 cargo test --test ast_equivalence_test ast_line_0197
 
@@ -205,6 +208,12 @@ cargo test --test ast_equivalence_test 2>&1 | awk '/Input does not parse cleanly
 | `scripts/smoke_test.jl` | Replay — flags regressions / improvements / drifts |
 | `scripts/_ast_check.jl` | Shared AstCheck module (strip_lines, safe_parseall, format_code, find_first_diff) |
 | `tests/corpus/smoke_sample.toml` | Committed sample + baseline read by smoke_test |
+| `jlparse/` | JuliaSyntax compiled to Wasm (`parser.wasm`, `parser.jl`, `build.jl`) |
+| `src/jlparse.rs` | wasmtime runtime for parser.wasm, green tree, normal form, `verify` |
+| `src/format.rs` | Verified formatting: protect grammar gaps / meaning changes as verbatim regions |
+| `tests/jlparse_test.rs` | Native-reference check, verify unit tests, generated `jl_*` suites |
+| `tests/corpus/jlparse_expectations.toml` | Non-clean classifications of the `jl_*` tests |
+| `tests/corpus/jlparse_reference.json` | Native JuliaSyntax output for the node-for-node check |
 
 ## Tree-sitter-julia key files
 

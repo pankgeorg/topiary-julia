@@ -1,0 +1,1019 @@
+# Expected classifications of the JuliaSyntax-verified suites (tests/jlparse_test.rs).
+#
+# Every JuliaSyntax-corpus snippet (`jl_line_NNNN`, line in juliasyntax_parser.jl) and every
+# known grammar gap (`jl_gap_line_NNNN` from expectations.toml, `jl_gap_ts_NNNN` from
+# localized_gaps.toml) is formatted with JuliaSyntax verification. Unlisted ids must be
+# clean: plain Topiary's output means the same as the input, according to JuliaSyntax.
+#
+#   status = "protected" — plain Topiary can't format it (grammar gap) or changes its
+#                          meaning; verified formatting leaves `note`'s node(s) verbatim
+#                          (kind:reason) and formats the rest.
+#   status = "js_error"  — JuliaSyntax rejects the snippet parsed as a file (the corpus has
+#                          production-specific and intentional-error snippets); verified
+#                          formatting reports JuliaSyntax's diagnostics.
+#
+# Regenerate: JLPARSE_CLASSIFY=1 cargo test --test jlparse_test jl_ -- --nocapture | grep ^CLASSIFY > c.log
+#             python3 scripts/expectations.py c.log > tests/corpus/jlparse_expectations.toml
+
+[[snippet]]
+id = "jl_gap_line_0197"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0198"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0199"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0200"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0201"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0225"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0226"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0229"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0309"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0311"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0334"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0336"
+status = "protected"
+note = "&:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_line_0370"
+status = "protected"
+note = "macrocall:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_line_0540"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0748"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0749"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0799"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_line_0872"
+status = "protected"
+note = "vect:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_line_0892"
+status = "protected"
+note = "vect:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_line_0896"
+status = "protected"
+note = "parameters:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_line_0955"
+status = "protected"
+note = "vcat:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_line_1053"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0001"
+status = "protected"
+note = "$:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0002"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0003"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0004"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0005"
+status = "protected"
+note = "&:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0006"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0007"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0008"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0009"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0010"
+status = "protected"
+note = "vcat:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0011"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0012"
+status = "protected"
+note = "parameters:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0013"
+status = "protected"
+note = "call:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0014"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0015"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0016"
+status = "protected"
+note = "function:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0017"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0018"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0019"
+status = "protected"
+note = "char:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0020"
+status = "protected"
+note = "char:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0021"
+status = "protected"
+note = "char:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0022"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0023"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0024"
+status = "protected"
+note = "=:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0025"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0026"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0027"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0028"
+status = "protected"
+note = "Integer:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0029"
+status = "protected"
+note = ".:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0030"
+status = "protected"
+note = "char:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0031"
+status = "protected"
+note = "for:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0032"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0033"
+status = "protected"
+note = "for:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0034"
+status = "protected"
+note = "for:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0035"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0036"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0037"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0038"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0039"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0040"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0041"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0042"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0043"
+status = "protected"
+note = "=:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0044"
+status = "js_error"
+
+[[snippet]]
+id = "jl_gap_ts_0045"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0046"
+status = "protected"
+note = "toplevel:GrammarGap,toplevel:GrammarGap"
+
+[[snippet]]
+id = "jl_gap_ts_0047"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0057"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0067"
+status = "protected"
+note = "hcat:NotPreserved"
+
+[[snippet]]
+id = "jl_line_0090"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0091"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0092"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0093"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0094"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0140"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0141"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0154"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0162"
+status = "protected"
+note = "hcat:NotPreserved"
+
+[[snippet]]
+id = "jl_line_0163"
+status = "protected"
+note = "hcat:NotPreserved"
+
+[[snippet]]
+id = "jl_line_0192"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0193"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0194"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0195"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0197"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0198"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0199"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0200"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0201"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0202"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0225"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0226"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0229"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0251"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0276"
+status = "protected"
+note = "call:NotPreserved"
+
+[[snippet]]
+id = "jl_line_0279"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0280"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0281"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0282"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0309"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0311"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0331"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0334"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0336"
+status = "protected"
+note = "&:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0370"
+status = "protected"
+note = "macrocall:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0371"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0378"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0386"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0408"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0413"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0424"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0425"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0430"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0434"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0438"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0441"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0443"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0446"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0453"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0481"
+status = "protected"
+note = "String:NotPreserved"
+
+[[snippet]]
+id = "jl_line_0487"
+status = "protected"
+note = "String:NotPreserved"
+
+[[snippet]]
+id = "jl_line_0537"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0540"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0549"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0561"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0567"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0568"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0573"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0575"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0576"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0577"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0578"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0590"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0593"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0594"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0595"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0599"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0613"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0614"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0625"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0630"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0646"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0669"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0681"
+status = "protected"
+note = "try:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0682"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0686"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0690"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0693"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0697"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0707"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0708"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0735"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0736"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0748"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0749"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0773"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0790"
+status = "protected"
+note = "char:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0793"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0794"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0795"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0799"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0800"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0802"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0803"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0805"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0824"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0825"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0826"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0827"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0828"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0829"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0830"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0831"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0832"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0833"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0834"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0835"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0836"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0837"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0838"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0839"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0840"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0841"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0842"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0843"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0844"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0845"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0846"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0861"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0864"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0869"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0872"
+status = "protected"
+note = "vect:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0873"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0886"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0892"
+status = "protected"
+note = "vect:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0893"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0896"
+status = "protected"
+note = "parameters:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0923"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0934"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0935"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0955"
+status = "protected"
+note = "vcat:GrammarGap"
+
+[[snippet]]
+id = "jl_line_0963"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0965"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0972"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0982"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0983"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_0984"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1025"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1043"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1044"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1045"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1049"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1050"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1053"
+status = "protected"
+note = "Identifier:GrammarGap"
+
+[[snippet]]
+id = "jl_line_1083"
+status = "protected"
+note = "doc:NotPreserved"
+
+[[snippet]]
+id = "jl_line_1106"
+status = "protected"
+note = "call:NotPreserved"
+
+[[snippet]]
+id = "jl_line_1107"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1111"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1115"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1116"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1117"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1118"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1119"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1121"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1122"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1127"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1128"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1129"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1130"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1133"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1134"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1135"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1160"
+status = "protected"
+note = "call:NotPreserved"
+
+[[snippet]]
+id = "jl_line_1161"
+status = "js_error"
+
+[[snippet]]
+id = "jl_line_1163"
+status = "js_error"
+

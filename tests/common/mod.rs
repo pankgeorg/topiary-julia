@@ -247,3 +247,106 @@ pub fn expect_roundtrip_regression(code: &str, note: &str) {
         "Roundtrip regression resolved ({note}). Remove from expectations.toml:\n  code: {code:?}\n  out:  {out:?}"
     );
 }
+
+// ─── JuliaSyntax (Wasm) helpers ─────────────────────────────────────
+
+#[cfg(feature = "jlparse")]
+use topiary_julia::format::{format_verified, topiary_format, Outcome};
+#[cfg(feature = "jlparse")]
+use topiary_julia::jlparse::{JlParser, Verdict};
+
+#[cfg(feature = "jlparse")]
+thread_local! {
+    static JL: RefCell<Option<JlParser>> = const { RefCell::new(None) };
+}
+
+#[cfg(feature = "jlparse")]
+pub fn with_jl<R>(f: impl FnOnce(&mut JlParser) -> R) -> R {
+    JL.with(|cell| {
+        let mut cell = cell.borrow_mut();
+        if cell.is_none() {
+            *cell = Some(JlParser::new().expect("JuliaSyntax (Wasm) failed to start"));
+        }
+        f(cell.as_mut().unwrap())
+    })
+}
+
+#[cfg(feature = "jlparse")]
+/// How a snippet fares with plain Topiary and with JuliaSyntax-verified formatting.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum JlClass {
+    /// JuliaSyntax (parseall) rejects the snippet; verified formatting reports its errors.
+    JsError,
+    /// Plain Topiary's output means the same (JuliaSyntax); verified formatting = plain.
+    Clean,
+    /// Plain Topiary fails or changes the meaning; verified formatting protected regions
+    /// (kinds listed) and its output verifies.
+    Protected(String),
+}
+
+#[cfg(feature = "jlparse")]
+/// Classify `code`; panics on anything that must never happen (refusal, unverified output).
+pub fn jl_classify(code: &str) -> JlClass {
+    with_jl(|jl| {
+        with_language(|language| {
+            let outcome = format_verified(code, language, jl, true).expect("JuliaSyntax trapped");
+            match outcome {
+                Outcome::SyntaxErrors(_) => JlClass::JsError,
+                Outcome::Refused(why) => panic!("verified formatting refused {code:?}: {why}"),
+                Outcome::Formatted { output, protected } => {
+                    // independent re-check of the final output
+                    match jl.verify(code, &output).expect("JuliaSyntax trapped") {
+                        Verdict::Equivalent => {}
+                        v => panic!("verified output does not verify: {v:?}\n  code: {code:?}\n  out:  {output:?}"),
+                    }
+                    if protected.is_empty() {
+                        // plain Topiary must give the same output
+                        let plain = topiary_format(code, language, true).expect("plain Topiary failed");
+                        assert_eq!(plain, output, "verified output differs from plain Topiary's");
+                        JlClass::Clean
+                    } else {
+                        let kinds: Vec<String> = protected.iter().map(|p| format!("{}:{:?}", p.kind, p.reason)).collect();
+                        JlClass::Protected(kinds.join(","))
+                    }
+                }
+            }
+        })
+    })
+}
+
+#[cfg(feature = "jlparse")]
+/// Generated per-snippet assertion. `expected` is "" (clean), "js_error" or "protected".
+/// With `JLPARSE_CLASSIFY=1` it prints the classification instead of asserting.
+pub fn assert_jl(id: &str, code: &str, expected: &str) {
+    let c = jl_classify(code);
+    let got = match &c {
+        JlClass::JsError => "js_error",
+        JlClass::Clean => "",
+        JlClass::Protected(_) => "protected",
+    };
+    if std::env::var_os("JLPARSE_CLASSIFY").is_some() {
+        let (output, regions) = with_jl(|jl| {
+            with_language(|language| match format_verified(code, language, jl, true).unwrap() {
+                Outcome::Formatted { output, protected } => (
+                    output,
+                    protected.iter().map(|p| code[p.start..p.end].to_string()).collect::<Vec<_>>(),
+                ),
+                Outcome::SyntaxErrors(d) => {
+                    (topiary_julia::jlparse::format_diagnostics("snippet", code, &d), vec![])
+                }
+                Outcome::Refused(r) => (r, vec![]),
+            })
+        });
+        let plain = with_language(|l| topiary_format(code, l, true)).map_err(|e| e.lines().next().unwrap_or("").to_string());
+        let j = serde_json::json!({"id": id, "status": got, "class": format!("{c:?}"), "code": code,
+                                   "output": output, "verbatim": regions,
+                                   "plain": match plain { Ok(p) => p, Err(e) => format!("ERROR: {e}") }});
+        println!("CLASSIFY\t{id}\t{got}\t{j}");
+        return;
+    }
+    assert_eq!(got, expected, "classification changed ({c:?}); update tests/corpus/jlparse_expectations.toml\n  code: {code:?}");
+}
+
+pub fn with_language_pub<R>(f: impl FnOnce(&Language) -> R) -> R {
+    with_language(f)
+}

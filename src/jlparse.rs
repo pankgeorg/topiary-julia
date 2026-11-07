@@ -483,8 +483,12 @@ fn push_sem<'a>(tree: &'a GreenTree, src: &'a str, i: usize, parent: &str, out: 
         if (!n.is_error() && (n.is_trivia() || n.is_whitespace())) || name == "TOMBSTONE" {
             return;
         }
+        // An operator token and an identifier with the same text are the same symbol
+        // (JuliaSyntax lexes `<:` as `Identifier` or as `<:` depending on context, e.g.
+        // `a +\n\n<:` vs `a + <:`); compare such leaves by text alone.
+        let kind = if n.class & (class::OPERATOR | class::IDENTIFIER) != 0 { u16::MAX } else { n.kind };
         out.push(Sem {
-            kind: n.kind,
+            kind,
             name,
             text: Some(&src[n.start..n.end]),
             flags: semantic_flags(name, n.flags),

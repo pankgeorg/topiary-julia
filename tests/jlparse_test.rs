@@ -167,3 +167,11 @@ fn line_starting_with_semicolon() {
         })
     });
 }
+
+#[test]
+fn operator_and_identifier_leaves_compare_by_text() {
+    // JuliaSyntax lexes the same `<:` as `Identifier` after blank lines and as `<:` otherwise
+    assert!(equivalent("a +\n\n<:", "a + <:"));
+    // but different text is still different
+    assert!(!equivalent("a + <:", "a + >:"));
+}

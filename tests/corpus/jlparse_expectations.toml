@@ -336,11 +336,6 @@ id = "jl_line_0057"
 status = "js_error"
 
 [[snippet]]
-id = "jl_line_0067"
-status = "protected"
-note = "hcat:NotPreserved"
-
-[[snippet]]
 id = "jl_line_0090"
 status = "js_error"
 
@@ -371,16 +366,6 @@ status = "js_error"
 [[snippet]]
 id = "jl_line_0154"
 status = "js_error"
-
-[[snippet]]
-id = "jl_line_0162"
-status = "protected"
-note = "hcat:NotPreserved"
-
-[[snippet]]
-id = "jl_line_0163"
-status = "protected"
-note = "hcat:NotPreserved"
 
 [[snippet]]
 id = "jl_line_0192"
@@ -437,11 +422,6 @@ status = "js_error"
 [[snippet]]
 id = "jl_line_0251"
 status = "js_error"
-
-[[snippet]]
-id = "jl_line_0276"
-status = "protected"
-note = "call:NotPreserved"
 
 [[snippet]]
 id = "jl_line_0279"
@@ -931,16 +911,6 @@ status = "protected"
 note = "Identifier:GrammarGap"
 
 [[snippet]]
-id = "jl_line_1083"
-status = "protected"
-note = "doc:NotPreserved"
-
-[[snippet]]
-id = "jl_line_1106"
-status = "protected"
-note = "call:NotPreserved"
-
-[[snippet]]
 id = "jl_line_1107"
 status = "js_error"
 
@@ -1003,11 +973,6 @@ status = "js_error"
 [[snippet]]
 id = "jl_line_1135"
 status = "js_error"
-
-[[snippet]]
-id = "jl_line_1160"
-status = "protected"
-note = "call:NotPreserved"
 
 [[snippet]]
 id = "jl_line_1161"

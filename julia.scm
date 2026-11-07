@@ -340,6 +340,13 @@
   "->" @prepend_space @append_space
 )
 
+;; `- 2` is a call, `-2` a literal: keep a unary +/- on a number as written.
+((unary_expression
+  (operator)
+  .
+  [(integer_literal) (float_literal)]) @leaf
+  (#match? @leaf "^[-+][ \t]"))
+
 ;; Unary operator + paren/tuple: preserve space to prevent AST change
 (unary_expression
   (operator) @append_space

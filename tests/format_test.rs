@@ -215,4 +215,8 @@ mod meaning_preserved {
     format_test!(vector_unary_tilde, "[a ~b]\n", "[a ~b]");
     format_test!(vector_unary_chain, "[x+y +z]\n", "[x+y +z]");
     format_test!(vector_binary_still_formatted, "[a+b, c-d]\n", "[a + b, c - d]");
+    // `- 2` is a call, `-2` a literal
+    format_test!(unary_minus_spaced_literal, "x = - 2\n", "x = - 2");
+    format_test!(unary_minus_literal, "x = -2.5\n", "x = -2.5");
+    format_test!(unary_minus_identifier, "x = - y\n", "x = -y");
 }

@@ -231,4 +231,5 @@ mod meaning_preserved {
     format_test!(import_identifier_no_comma, "using Base: f\n", "using Base: f");
     format_test!(macro_dotted_unary_arg, "@test .√[3,4] == x\n", "@test .√[3, 4] == x");
     format_test!(macro_name_scoped, "Base.@kwdef struct A end\n", "Base.@kwdef struct A end");
+    format_test!(vector_range_unary, "[1:100 -1:-1:-100]\n", "[1:100 -1:-1:-100]");
 }

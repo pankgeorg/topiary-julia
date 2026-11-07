@@ -202,3 +202,34 @@ mod idempotence {
     idempotent_test!(abstract_type, "abstract type Shape end\n");
     idempotent_test!(primitive_type, "primitive type UInt8 8 end\n");
 }
+
+/// Formattings that used to change the meaning of the code (found by verifying with
+/// JuliaSyntax, see tests/jlparse_test.rs): each must now keep it.
+mod meaning_preserved {
+    use super::common;
+    // `""" doc """ name` on one line documents `name`; `"""…"""name` would not.
+    format_test!(docstring_same_line, "\"\"\"doc\"\"\" name\n", "\"\"\"doc\"\"\" name");
+    format_test!(docstring_next_line, "\"\"\"\ndoc\n\"\"\"\nname\n", "\"\"\"\ndoc\n\"\"\"\nname");
+    // inside brackets, `x +y` is two elements (hcat), `x + y` one
+    format_test!(vector_unary_plus, "[x +y]\n", "[x +y]");
+    format_test!(vector_unary_tilde, "[a ~b]\n", "[a ~b]");
+    format_test!(vector_unary_chain, "[x+y +z]\n", "[x+y +z]");
+    format_test!(vector_binary_still_formatted, "[a+b, c-d]\n", "[a + b, c - d]");
+    // `- 2` is a call, `-2` a literal
+    format_test!(unary_minus_spaced_literal, "x = - 2\n", "x = - 2");
+    format_test!(unary_minus_literal, "x = -2.5\n", "x = -2.5");
+    format_test!(unary_minus_identifier, "x = - y\n", "x = -y");
+    // spaced ranges (tree-sitter-julia read `1 : n` here as `1` then a quote `:n`)
+    format_test!(for_spaced_range, "for i = 1 : n\nf(i)\nend\n", "for i = 1 : n\n    f(i)\nend");
+    format_test!(for_in_spaced_range, "for i in a+1 : -1 : 2\nend\n", "for i in a + 1 : -1 : 2\nend");
+    format_test!(vector_spaced_range, "[1 : n]\n", "[1 : n]");
+    // string-macro suffixes that are word operators
+    format_test!(string_macro_suffix_in, "x\"s\"in\n", "x\"s\"in");
+    format_test!(command_macro_suffix_in, "x`s`in\n", "x`s`in");
+    // found by the corpus run (25k files)
+    format_test!(import_operator_no_comma, "import Base: ==\n", "import Base: ==");
+    format_test!(import_identifier_no_comma, "using Base: f\n", "using Base: f");
+    format_test!(macro_dotted_unary_arg, "@test .√[3,4] == x\n", "@test .√[3, 4] == x");
+    format_test!(macro_name_scoped, "Base.@kwdef struct A end\n", "Base.@kwdef struct A end");
+    format_test!(vector_range_unary, "[1:100 -1:-1:-100]\n", "[1:100 -1:-1:-100]");
+}

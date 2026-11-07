@@ -17,6 +17,27 @@ tree-sitter-julia = { git = "https://github.com/pankgeorg/tree-sitter-julia", br
 clap = { version = "4", features = ["derive"] }
 log = "0.4"
 env_logger = "0.11"
+# Julia's own parser (JuliaSyntax compiled to Wasm GC + exception handling, jlparse/parser.wasm)
+wasmtime = { version = "50.0.1", default-features = false, optional = true, features = ["cranelift", "gc", "gc-drc", "runtime", "std", "parallel-compilation"] }
+
+[features]
+default = ["jlparse"]
+# Verify every formatting with JuliaSyntax, protect grammar gaps, exact syntax errors.
+jlparse = ["dep:wasmtime"]
 
 [dev-dependencies]
 pretty_assertions = "1"
+
+[dev-dependencies.serde_json]
+version = "1"
+
+# Compiling parser.wasm with an unoptimized Cranelift takes ~30 s; optimize the runtime even
+# in dev/test builds.
+[profile.dev.package.cranelift-codegen]
+opt-level = 2
+[profile.dev.package.wasmtime]
+opt-level = 2
+[profile.dev.package.wasmtime-internal-cranelift]
+opt-level = 2
+[profile.dev.package.regalloc2]
+opt-level = 2

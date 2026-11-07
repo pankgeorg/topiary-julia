@@ -137,14 +137,6 @@ js_sexp = "(catch ex (block (call (. GC gc)) (call catch_backtrace) (= caught tr
 code = """catch ex\n        GC.gc()\n        catch_backtrace()\n        caught = true\n    """
 origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/test/exceptions.jl:379"
 [[snippet]]
-js_sexp = "(for (iteration (in i (call-i (call length Bc) : -1 2))) (block (= (ref Bc i) (call-i (call-i (ref Bc i) << 1) | (call-i (ref Bc (call-i i - 1)) >>> 63)))))"
-code = """for i = length(Bc) : -1 : 2\n        Bc[i] = (Bc[i] << 1) | (Bc[i-1] >>> 63)\n    end"""
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitarray.jl:861"
-[[snippet]]
-js_sexp = "(for (iteration (in t (call-i (call length Bc) : -1 (call-i k + 1)))) (block (= (ref Bc t) (call-i (call-i (ref Bc t) << 1) | (call-i (ref Bc (call-i t - 1)) >>> 63)))))"
-code = """for t = length(Bc) : -1 : k + 1\n        Bc[t] = (Bc[t] << 1) | (Bc[t - 1] >>> 63)\n    end"""
-origin = "~/.julia/juliaup/julia-1.11.6+0.aarch64.linux.gnu/bin/../share/julia/base/bitarray.jl:909"
-[[snippet]]
 js_sexp = "(elseif (call-i (. (. node parent) parent) == nothing) (block) (block (call fix_insert! tree node)))"
 code = """elseif node.parent.parent == nothing\n        ;\n    else\n        fix_insert!(tree, node)\n    """
 origin = "~/.julia/packages/DataStructures/IrAJn/src/red_black_tree.jl:220"

@@ -15,6 +15,10 @@
   (block_comment)
 ] @leaf
 
+;; tree-sitter-julia reads `@test .√x` as the macro `@test.√` (a field access in the
+;; macro name): keep such names as written, so the space (and the meaning) survives.
+((macro_identifier (field_expression)) @leaf)
+
 ;; =============================================================
 ;; 2. Keyword spacing — space after keywords
 ;; =============================================================
@@ -340,6 +344,13 @@
   "->" @prepend_space @append_space
 )
 
+;; `- 2` is a call, `-2` a literal: keep a unary +/- on a number as written.
+((unary_expression
+  (operator)
+  .
+  [(integer_literal) (float_literal)]) @leaf
+  (#match? @leaf "^[-+][ \t]"))
+
 ;; Unary operator + paren/tuple: preserve space to prevent AST change
 (unary_expression
   (operator) @append_space
@@ -414,12 +425,27 @@
   "," @append_spaced_softline
 )
 
+;; Inside brackets, whitespace is semantic: `[x +y]` is `[x (+y)]` (hcat), but
+;; tree-sitter-julia reads it as `x + y` (also inside ranges: `[1:9 -1:-1:-9]`). Keep
+;; such an element as written when an operator that can be unary has space before it
+;; and none after.
+((vector_expression
+  (_) @leaf)
+  (#match? @leaf "[ \t]([-+~!¬√∛∜±∓&$]|<:|>:)[^ \t\n=]"))
+
 ;; Matrix expressions: content is semantically significant.
 (matrix_expression) @leaf
 
 ;; Bracescat: curly expressions with space/semicolon-separated elements.
 ;; Spaces are semantic (like matrix expressions), so preserve as @leaf.
 (curly_expression (matrix_row)) @leaf
+
+;; A docstring and its target: `"""doc""" name` on one line must keep a space
+;; (`"""doc"""name` means something else); a line break stays a line break.
+(doc_string_binding
+  [(string_literal) (prefixed_string_literal)] @append_input_softline
+  .
+  (_))
 
 ;; =============================================================
 ;; 7. Top-level / source file structure
@@ -445,10 +471,10 @@
 ;; 9. Import / using / export formatting
 ;; =============================================================
 
-(selected_import
-  ":" @append_space
-  "," @append_space
-)
+;; Two patterns: in one, both children would be required, and `import Base: ==`
+;; (no comma) lost its space — `Base:==` lexes as `:=`.
+(selected_import ":" @append_space)
+(selected_import "," @append_space)
 
 (import_statement "," @append_space)
 (using_statement "," @append_space)

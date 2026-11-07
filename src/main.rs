@@ -9,8 +9,10 @@ use topiary_julia::sexp;
 use topiary_tree_sitter_facade::Language as Grammar;
 
 mod parse;
+#[cfg(feature = "jlparse")]
+mod corpus;
 
-const QUERY: &str = include_str!("../julia.scm");
+pub(crate) const QUERY: &str = include_str!("../julia.scm");
 
 #[derive(Parser)]
 #[command(name = "topiary-julia", about = "Format Julia source code")]
@@ -72,6 +74,19 @@ enum Command {
     /// Check that AFTER means the same as BEFORE, according to JuliaSyntax (exit 0) or not (1).
     #[cfg(feature = "jlparse")]
     Verify { before: PathBuf, after: PathBuf },
+
+    /// Corpus run: format each file listed on stdin (one path per line) with verification,
+    /// in parallel, writing one JSON line per file to stdout (nothing is written to the files).
+    #[cfg(feature = "jlparse")]
+    #[command(hide = true)]
+    JlCorpus {
+        /// Worker threads
+        #[arg(long, default_value_t = 4)]
+        jobs: usize,
+        /// Seconds after which a file is reported as a timeout (its worker is abandoned)
+        #[arg(long, default_value_t = 60)]
+        timeout: u64,
+    },
 }
 
 fn make_language() -> Result<Language, Box<dyn std::error::Error>> {
@@ -342,6 +357,8 @@ fn main() -> ExitCode {
         Some(Command::JlParse { sem }) => run_jlparse(sem),
         #[cfg(feature = "jlparse")]
         Some(Command::Verify { ref before, ref after }) => run_verify(before, after),
+        #[cfg(feature = "jlparse")]
+        Some(Command::JlCorpus { jobs, timeout }) => corpus::run(jobs, timeout),
         None => run_format(&cli),
     }
 }

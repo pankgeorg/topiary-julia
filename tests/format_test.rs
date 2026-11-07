@@ -210,4 +210,9 @@ mod meaning_preserved {
     // `""" doc """ name` on one line documents `name`; `"""…"""name` would not.
     format_test!(docstring_same_line, "\"\"\"doc\"\"\" name\n", "\"\"\"doc\"\"\" name");
     format_test!(docstring_next_line, "\"\"\"\ndoc\n\"\"\"\nname\n", "\"\"\"\ndoc\n\"\"\"\nname");
+    // inside brackets, `x +y` is two elements (hcat), `x + y` one
+    format_test!(vector_unary_plus, "[x +y]\n", "[x +y]");
+    format_test!(vector_unary_tilde, "[a ~b]\n", "[a ~b]");
+    format_test!(vector_unary_chain, "[x+y +z]\n", "[x+y +z]");
+    format_test!(vector_binary_still_formatted, "[a+b, c-d]\n", "[a + b, c - d]");
 }

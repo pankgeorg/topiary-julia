@@ -414,6 +414,13 @@
   "," @append_spaced_softline
 )
 
+;; Inside brackets, whitespace is semantic: `[x +y]` is `[x (+y)]` (hcat), but
+;; tree-sitter-julia reads it as `x + y`. Keep such an element as written when an
+;; operator that can be unary has space before it and none after.
+((vector_expression
+  (binary_expression) @leaf)
+  (#match? @leaf "[ \t]([-+~!¬√∛∜±∓&$]|<:|>:)[^ \t\n=]"))
+
 ;; Matrix expressions: content is semantically significant.
 (matrix_expression) @leaf
 

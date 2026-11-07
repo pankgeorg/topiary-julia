@@ -15,6 +15,10 @@
   (block_comment)
 ] @leaf
 
+;; tree-sitter-julia reads `@test .√x` as the macro `@test.√` (a field access in the
+;; macro name): keep such names as written, so the space (and the meaning) survives.
+((macro_identifier (field_expression)) @leaf)
+
 ;; =============================================================
 ;; 2. Keyword spacing — space after keywords
 ;; =============================================================

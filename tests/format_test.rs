@@ -226,4 +226,7 @@ mod meaning_preserved {
     // string-macro suffixes that are word operators
     format_test!(string_macro_suffix_in, "x\"s\"in\n", "x\"s\"in");
     format_test!(command_macro_suffix_in, "x`s`in\n", "x`s`in");
+    // found by the corpus run (25k files)
+    format_test!(import_operator_no_comma, "import Base: ==\n", "import Base: ==");
+    format_test!(import_identifier_no_comma, "using Base: f\n", "using Base: f");
 }

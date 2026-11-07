@@ -466,10 +466,10 @@
 ;; 9. Import / using / export formatting
 ;; =============================================================
 
-(selected_import
-  ":" @append_space
-  "," @append_space
-)
+;; Two patterns: in one, both children would be required, and `import Base: ==`
+;; (no comma) lost its space — `Base:==` lexes as `:=`.
+(selected_import ":" @append_space)
+(selected_import "," @append_space)
 
 (import_statement "," @append_space)
 (using_statement "," @append_space)
